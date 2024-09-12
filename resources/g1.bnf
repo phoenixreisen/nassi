@@ -1,0 +1,27 @@
+DIAGRAM		= STATEMENT [_ STATEMENT]*
+
+<STATEMENT>	= FOR	
+            | WHILE	
+            | UNTIL	
+            | IF	
+            | SWITCH
+            | TEXT
+
+FOR		    = <('for'   | 'FOR')>   _ TEXT _ BLOCK
+WHILE		= <('while' | 'WHILE')> _ TEXT _ BLOCK
+UNTIL		= <('until' | 'UNTIL')> _ TEXT _ BLOCK
+
+IF		    = <('if'   | 'IF')> _ TEXT _ BLOCK [_ ELSE]
+ELSE        = <('else' | 'ELSE')> _ BLOCK
+
+SWITCH		= <('switch'  | 'SWITCH')> [_ ID] _ TEXT _ <'{'> _ CASES _ <'}'>
+CASES		= (CASE | DEFAULT) [_ (CASE | DEFAULT)]*
+CASE		= <('case'    | 'CASE')>    _  TEXT _  BLOCK
+DEFAULT		= <('default' | 'DEFAULT')> _ [TEXT _] BLOCK
+
+ID          = #"[a-zA-Z0-9_]+:"
+BLOCK		= <'{'> [_ STATEMENT]+ _ <'}'>
+<_>		    = <(' ' | '\t' | '\n' )>*
+<TEXT>		= TEXTBLOCK | SIMPLETEXT
+TEXTBLOCK	= <'"""'> #"[^\"\"\"]+" <'"""'>
+SIMPLETEXT	= #"[^:^{^}^\n^\"\"\"]+"

@@ -1,0 +1,3 @@
+IF Hunger? {
+    Essen
+}

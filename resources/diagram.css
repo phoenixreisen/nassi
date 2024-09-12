@@ -1,0 +1,296 @@
+html {
+  /* Scale size */
+	font-size: 25px;
+}
+
+.diagram {
+	width: fit-content;
+}
+
+.block + .block,
+.block + .if, .if + .block, .if + .if,
+.block + .for, .for + .block, .if + .for, .for + .if, .for + .for,
+.block + .while, .while + .block, .if + .while, .while + .if, .for + .while,
+.while + .for, .while + .while,
+.block + .until, .until + .block, .if + .until, .until + .if, .for + .until,
+.until + .for, .while + .until, .until + .while, .until + .until,
+.block + .switch, .switch + .block, .if + .switch, .switch + .if, .for +
+.switch, .switch + .for, .while + .switch, .switch + .while, .until + .switch,
+.switch + .until {
+  border-top: none;
+}
+
+/* block 
+
+	 <div class="block">
+	 	statements
+	 </div> */
+
+.block {
+  padding: 0.5rem;
+	border: 1px solid black;
+}
+
+/* if 
+
+   <div class="if">
+     <div>condition</div>
+     <div>
+       <div>true</div>
+       <div class="block">statements</div>
+     </div>
+     <div>
+       <div>false</div>
+       <div class="block">statements</div>
+     </div>
+   </div> */
+
+.if {
+  display: grid;
+	border: 1px solid black;
+	padding: 0;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: fit-content fit-content fit-content;
+}
+
+/* condition */
+
+.if > div:nth-child(1) {
+  padding: 0.5rem;
+	text-align: center;
+	border-bottom: 1px solid black;
+	grid-column-start: 1;
+	grid-column-end: 3;
+	grid-row-start: 1;
+	grid-row-end: 2;
+}
+
+/* true branch */
+
+.if > div:nth-child(2) {
+  border-right: 1px solid black;
+}
+
+/* true */
+
+.if > div:nth-child(2) > div:nth-child(1) {
+  padding: 0.5rem;
+	border: none;
+	border-bottom: 1px solid black;
+	grid-column-start: 1;
+	grid-column-end: 2;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+/* true block */
+
+.if > div:nth-child(2) > div:nth-child(2) {
+	width: auto;
+	grid-column-start: 1;
+	grid-column-end: 2;
+	grid-row-start: 3;
+	grid-row-end: 4;
+  border: none;
+}
+
+/* false branch */
+
+.if > div:nth-child(3) {
+}
+
+/* false */
+
+.if > div:nth-child(3) > div:nth-child(1) {
+  padding: 0.5rem;
+	border: none;
+	border-bottom: 1px solid black;
+	grid-column-start: 2;
+	grid-column-end: 3;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+/* false block */
+
+.if > div:nth-child(3) > div:nth-child(2) {
+width: auto;
+grid-column-start: 2;
+	grid-column-end: 3;
+	grid-row-start: 3;
+	grid-row-end: 4;
+	border: none;
+}
+
+/* for / while 
+
+	 <div class="while">
+	 	 <div>condition</div>
+	 	 <div class="block">statements</div>
+	 </div> */
+
+.for, .while {
+	display: grid;
+	padding: 0;
+	border: 1px solid black;
+	grid-template-columns: 2.5rem auto;
+	grid-template-rows: fit-content fit-content;
+}
+
+/* condition */
+
+.for > div:nth-child(1),
+.while > div:nth-child(1) {
+  padding: 0.5rem;
+	border: none;
+	grid-column-start: 1;
+	grid-column-end: 3;
+	grid-row-start: 1;
+	grid-row-end: 2;
+}
+
+/* block */
+
+.for > div:nth-child(2),
+.while > div:nth-child(2) {
+	width: auto;
+	border: none;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	grid-column-start: 2;
+	grid-column-end: 3;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+/* until 
+
+	 <div class="until">
+	 	 <div>condition</div>
+	 	 <div class="block">statements</div>
+	 </div> */
+
+.until {
+	display: grid;
+	padding: 0;
+	border: 1px solid black;
+	grid-template-columns: 2.5rem auto;
+	grid-template-rows: auto min-content;
+}
+
+/* condition */
+
+.until > div:nth-child(1) {
+  padding: 0.5rem;
+	border: none;
+	grid-column-start: 1;
+	grid-column-end: 3;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+/* block */
+
+.until > div:nth-child(2) {
+	width: auto;
+	border: none;
+	border-left: 1px solid black;
+	border-bottom: 1px solid black;
+	grid-column-start: 2;
+	grid-column-end: 3;
+	grid-row-start: 1;
+	grid-row-end: 2;
+}
+
+/* switch 
+
+
+   <div class="switch">
+     <div>expression</div>
+     <div>
+       <div>case expression 1</div>
+       <div class="block">statements 1</div>
+     </div>
+     <div>
+       <div>case expression 2</div>
+       <div class="block">statements 2</div>
+     </div>
+     <div>
+       <div>case expression n</div>
+       <div class="block">statements n</div>
+     </div>
+     <div>
+       <div>default</div>
+       <div class="block">default statements</div>
+     </div>
+   </div> */
+
+.switch {
+  display: grid;
+	border: 1px solid black;
+	padding: 0;
+	grid-template-columns: 25% 25% 25% 25%;
+	/*grid-template-columns: repeat(auto-fit);*/
+	grid-template-rows: fit-content fit-content fit-content;
+}
+
+/* branches */
+
+.switch > div {
+  border: 1px solid black;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+}
+
+/* default branch */
+
+.switch > div:last-child {
+  border-right: none;
+}
+
+/* expression */
+
+.switch > div:nth-child(1) {
+  padding: 0.5rem;
+	text-align: center;
+	border: none;
+	border-bottom: 1px solid black;
+	grid-column-start: 1;
+	/* Nicht schön, funktioniert aber. */
+	grid-column-end: -1;
+	grid-row-start: 1;
+	grid-row-end: 2;
+}
+
+/* case expression n */
+
+.switch > div > div:nth-child(1) {
+  padding: 0.5rem;
+	border: none;
+	border-bottom: 1px solid black;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+/* statements n */
+
+.switch > div > div:nth-child(2) {
+	width: auto;
+  height: auto;
+	border: none;
+	grid-row-start: 3;
+	grid-row-end: 4;
+}
+
+/* default */
+
+.switch > div:last-child > div:nth-child(1) {
+	border-right: none;
+}
+
+/* default statements */
+
+.switch > div:last-child > div:last-child {
+	border-right: none;
+}
