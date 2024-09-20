@@ -29,11 +29,9 @@
 (defn parse-diagram [x]
   (parse (read-in x)))
 
-;(steps/add-steps (parse (read-in (io/resource "x0.uc"))))
+;(steps/steps (parse (read-in (io/resource "GutenMorgen2.uc"))))
 
 (defn- xf-diagram [& xs] [:div.diagram xs])
-(defn- xf-sentence [s] #_[:div s] [:div.block s])
-(defn- xf-paragraph [s] #_[:div (str/replace s "\"\"\"" "")] [:div.block (str/replace s "\"\"\"" "")])
 (defn- xf-block [& xs] [:div.block xs])
 (defn- xf-for [s b] [:div.for s b])
 (defn- xf-while [s b] [:div.while s b])
@@ -41,6 +39,14 @@
 (defn- xf-switch [exp cases] [:div.switch exp cases])
 (defn- xf-cases [ & cases] cases)
 (defn- xf-case [exp block] [:div exp block])
+
+(defn- xf-sentence 
+  ([s] [:div.block s])
+  ([s st] [:div.block [:b st] ": " s]))
+
+(defn- xf-paragraph 
+  ([s] [:div.block (str/replace s "\"\"\"" "")])
+  ([s st] [:div.block [:b st] ": " (str/replace s "\"\"\"" "")]))
 
 (defn- xf-if 
   ([s yes] 
@@ -58,7 +64,8 @@
      [:div no]]]))
 
 (defn- to-html [x]
-  (let [ast (parse-diagram (io/resource x))]
+  (let [ast (steps/add-steps
+              (parse-diagram (io/resource x)))]
     (h/html 
       (insta/transform 
         {:DIAGRAM     xf-diagram
@@ -94,9 +101,18 @@
 ;; - if, then, else
 
 (comment
+
+
+
+(re-matches #"(#[A-Za-z][\.A-Za-z0-9_-]+)?.*"  "#a hello world") 
+
+(re-matches #"(#[0-9]+)?.*"  "#123 hello world") 
+(re-matches #"(#[0-9]+)?.*"  "hello world") 
+
   (require '[markdown.core :as md])
   (def input       "# This is a test\n <a name=\"abcde\">some<a/> code follows\n```clojure\n(defn foo [])\n```Let's link back to [AbCdE](abcde) ")
   (def input "hello [github](http://github.com)")
+  (def input "hello [github](#x1)")
   (def parser (.build (Parser/builder)))
   (def document (.parse parser input))
   (def renderer (.build (HtmlRenderer/builder)))
