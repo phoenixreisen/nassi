@@ -26,10 +26,10 @@
    (let [a (parse-diagram (io/resource (str "test/" input)))
          b (with-open [r (io/reader (io/resource (str "test/" expected)))]
   (edn/read (java.io.PushbackReader. r)))]
-   (is (= a b))))) 
+   (is (= a b) input))))
 
 (deftest approval-test
-  (testing "FIXME, I fail."
+  (testing "Could not approve:"
     (approve "simple.uc" )
     (approve "for1.uc" )
     (approve "for2.uc" )
@@ -40,4 +40,4 @@
     (approve "switch2.uc")
     (approve "GutenMorgen.uc")))
 
-;(parse-diagram (io/resource (str "test/switch1.uc")))
+;(parse-diagram (io/resource (str "test/GutenMorgen.uc")))

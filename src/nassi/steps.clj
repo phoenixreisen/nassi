@@ -25,6 +25,46 @@
   (when (vector? x) 
     (first x)))
 
+(def ^:private node-id-regex  
+  "Matches a pound-symbol followed by a valid HTML id.
+
+  Valid HTML id attribute values begin with a letter and must comprise only
+  letters ( a - Z ), digits ( 0 - 9 ), hyphens ( - ), underscores ( _ ), and
+  periods ( . )." 
+  #"(?s)\s*(#[A-Za-z][\.A-Za-z0-9_-]+).*")
+
+(defn- process-sentence-node
+  "Transforms a SENTENCE node like so:
+
+     `[:SENTENCE <optional-id-and-text>]` 
+  => `[:SENTENCE <optional-id> <step> <text>]` 
+
+  e.g.
+
+  ```
+  (process-sentence-node [:SENTENCE \" #x1-2 Bla, bla, bla\"] \"1.2\")
+  => [:SENTENCE \"#x1-2\" \"1.2\" \"Bla, bla, bla\"]
+
+  (process-sentence-node [:SENTENCE \"Bla, bla, bla\"] \"1.2\")
+  => [:SENTENCE nil \"1.2\" \"Bla, bla, bla\"]
+  ```"
+  [[type s] step]
+  (if-some [[_ id] (re-matches node-id-regex s)]
+    [:SENTENCE id step (-> (str/replace-first s id "")
+                           (str/trim))]
+    [:SENTENCE nil step (str/trim s)]))
+
+(defn- process-paragraph-node
+  "Transforms a PARAGRAPH node like so:
+
+     `[:PARAGRAPH <optional-id-and-text>]` 
+  => `[:PARAGRAPH <optional-id> <step> <text>]`"
+  [[type s] step]
+  (let [s2 (subs s 3 (- (count s) 3))] ; remove """ from both ends
+    (if-some [[_ id] (re-matches node-id-regex s2)]
+      [:PARAGRAPH id step (str/replace-first s2 id "")]
+      [:PARAGRAPH nil step s2])))   
+
 (defn add-steps 
   "Adds steps to each SENTENCE- resp. PARAGRAPH node."
   [ast]
@@ -37,63 +77,56 @@
           (= :BLOCK x)                  (do (push-step! stp) x)
           (= :BLOCK (node-type x))      (do (pop-step! stp) x)
           (= :ELSE x)                   (do (inc-step! stp) x)
-          (= :SENTENCE (node-type x))   (conj x (inc-step! stp))
-          (= :PARAGRAPH (node-type x))  (conj x (inc-step! stp))
+          (= :SENTENCE (node-type x))   (process-sentence-node x (inc-step! stp))
+          (= :PARAGRAPH (node-type x))  (process-paragraph-node x (inc-step! stp))
           :else x))
       ast)))
 
-(def ^:private node-id-regex  
-  "Matches a pound-symbol followed by a valid HTML id.
+(defn id->step
+  "Maps each id to it's corresponding step. Therefore this FN should only be
+  called, if `ast` was delivered via `add-steps`.
 
-  Valid HTML id attribute values begin with a letter and must comprise only
-  letters ( a - Z ), digits ( 0 - 9 ), hyphens ( - ), underscores ( _ ), and
-  periods ( . )." 
-  #"\s*(#[A-Za-z][\.A-Za-z0-9_-]+).*")
-
-(defn- node-id 
-  "A SENTENCE or PARAGRAPH can optionally be annotated with an id (s.
-  `node-id-regex`). A node-id must be the first thing in a SENTENCE resp.
-  PARAGRAPH.
-  
-  e.g.
-
-  ```
-  (node-id [:SENTENCE \"#Check-1 In this step we check that, ...\"])
-  => \"#Check-1\" 
-
-  (node-id [:SENTENCE \"We copy the file and move on.\"])
-  => nil
-  ```"
-  [[type s]]
-  (when-some [[_ id] (re-matches node-id-regex s)]
-    id))
-
-(defn steps 
-  "Returns a tuple `[new-ast id->step]`.
-  
-  In the `new-ast` a step number is added to each SENTENCE- and each PARAGRAPH
-  node.
-  
-  The map `id->step` shows the determined step number for every defined id."
-
+  Throws an Exception, if the same id is found in more than one node."
   [ast]
-  (let [stp (mk-step)
-        id->step (atom {})
-        process-text (fn [x]
-                       (let [curr-step (inc-step! stp)]
-                         (when-some [id (node-id x)]
-                           (swap! id->step assoc id curr-step))
-                         (conj x curr-step)))]
-    [(w/postwalk
+  (let [res (atom {})]
+    (w/postwalk
       (fn [x] 
-        (cond
-          (= :CASES x)                  (do (push-step! stp) x)
-          (= :CASES (node-type x))      (do (pop-step! stp) x)
-          (= :BLOCK x)                  (do (push-step! stp) x)
-          (= :BLOCK (node-type x))      (do (pop-step! stp) x)
-          (= :ELSE x)                   (do (inc-step! stp) x)
-          (= :SENTENCE (node-type x))   (process-text x)
-          (= :PARAGRAPH (node-type x))  (process-text x)
-          :else x))
+        (when (or (= :SENTENCE  (node-type x))   
+                  (= :PARAGRAPH (node-type x)))  
+          (let [[_ id step _] x]
+            (when id
+              (when-some [node (get @res id)]
+                (println id)
+                (throw (ex-info (str "ID " id " is not unique!")
+                         {:a node
+                          :b x})))
+              (swap! res assoc id step))))
+        x)
       ast)
-     @id->step]))
+    @res))
+
+(comment TEST-CODE
+(let [s1  "   #Check-1\n In this step we check that, ..."
+      s2  "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""
+     s "hello";s1; (subs s2 3) 
+     [_ id] 
+(re-matches node-id-regex s)
+      ]
+  id)
+
+(process-sentence-node [:SENTENCE " #x1-2 Bla, bla, bla"] "1.2")
+
+  (= (process-sentence-node [:SENTENCE "Bla, bla, bla"] "1.2")
+   [:SENTENCE nil "1.2" "Bla, bla, bla"])
+
+
+  (process-sentence-node [:SENTENCE "   #Check-1 In this step we check that, ..."])
+  (process-sentence-node [:SENTENCE " In this step we check that, ..."])
+  (process-paragraph-node
+[:PARAGRAPH "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""] "1.3")
+
+  (process-paragraph-node
+    [:PARAGRAPH "\"\"\"\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""] "1.2")
+  (node-id
+    [:PARAGRAPH "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""])
+)

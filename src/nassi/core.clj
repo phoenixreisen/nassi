@@ -7,29 +7,18 @@
             [nassi.steps :as steps]
             [editscript.core :as e]
             [instaparse.core :as insta]
-            [hiccup2.core :as h]
+            [hiccup.core :as h]
+            [markdown.core :as md]
             [clojure.java.io :as io]
             [clojure.walk :as w]))
-
-(defn- read-in 
-  "Reads in a textual representation of a nassi-shneiderman diagram and
-  returns a string that can be parsed with the `parse` FN."
-  [x]
-  (with-open [r (io/reader x)]
-    (str/join \newline
-      (->> (line-seq r)
-           (remove str/blank?)
-           (map str/trim)))))
 
 (def ^:private parse 
   "This FN accepts a textual representation of a nassi-shneiderman diagram and
   returns either an abstract syntax tree, or a failure."
-  (insta/parser (io/resource "grammar.bnf")))
+  (insta/parser (io/resource "grammar.bnf") :string-ci true))
 
 (defn parse-diagram [x]
-  (parse (read-in x)))
-
-;(steps/steps (parse (read-in (io/resource "GutenMorgen2.uc"))))
+  (parse (slurp x)))
 
 (defn- xf-diagram [& xs] [:div.diagram xs])
 (defn- xf-block [& xs] [:div.block xs])
@@ -40,13 +29,10 @@
 (defn- xf-cases [ & cases] cases)
 (defn- xf-case [exp block] [:div exp block])
 
-(defn- xf-sentence 
-  ([s] [:div.block s])
-  ([s st] [:div.block [:b st] ": " s]))
-
-(defn- xf-paragraph 
-  ([s] [:div.block (str/replace s "\"\"\"" "")])
-  ([s st] [:div.block [:b st] ": " (str/replace s "\"\"\"" "")]))
+(defn- xf-text [id->step id st s] 
+  [:div.block 
+   {:id (when id (subs id 1))} ; remove # from start 
+   [:b st] ": " (md/md-to-html-string s)])
 
 (defn- xf-if 
   ([s yes] 
@@ -65,12 +51,13 @@
 
 (defn- to-html [x]
   (let [ast (steps/add-steps
-              (parse-diagram (io/resource x)))]
+              (parse-diagram x))
+        id->step (steps/id->step ast)]
     (h/html 
       (insta/transform 
         {:DIAGRAM     xf-diagram
-         :PARAGRAPH   xf-paragraph
-         :SENTENCE    xf-sentence
+         :PARAGRAPH   (partial xf-text id->step)
+         :SENTENCE    (partial xf-text id->step)
          :BLOCK       xf-block
          :FOR         xf-for
          :WHILE       xf-while
@@ -82,42 +69,43 @@
          :IF          xf-if} 
         ast))))
 
+#_(spit "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.html"
+  (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
+    (to-html "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.uc") "</body> </html>"))
+
 #_(spit "/home/jan/tmp/uc.html"
   (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
-    (to-html  "test/GutenMorgen.uc") "</body> </html>"))
+    (to-html (io/resource "GutenMorgen2.uc")) "</body> </html>"))
 
-;(parse (read-in (io/resource "x2.uc")))
-;(println (str (to-html "test/switch1.uc")))
-
-;(def a (parse (read-in (io/resource "ex0.uc"))))
-;(def b (parse (read-in (io/resource "ex1.uc"))))
+;(def a (parse (slurp (io/resource "ex0.uc"))))
+;(def b (parse (slurp (io/resource "ex1.uc"))))
 ;(e/diff a b)
 
 ; -------------------------------------------------------------
 
-;; - Warnen, wenn zwei Exceptions mit der gleichen ID gefunden werden.
+;; - Warnen, wenn die gleiche ID in verschiedenen SENTENCE bzw. PARAGRAPH
+;;   Knoten verwendet wird
 ;; - Warnen, wenn eine Exception nicht behandelt wird.
 ;; - Ueberlegen, wie man Schritte referenziert
-;; - if, then, else
 
 (comment
+(parse-diagram (io/resource "GutenMorgen2.uc"))
 
-
-
-(re-matches #"(#[A-Za-z][\.A-Za-z0-9_-]+)?.*"  "#a hello world") 
-
-(re-matches #"(#[0-9]+)?.*"  "#123 hello world") 
-(re-matches #"(#[0-9]+)?.*"  "hello world") 
+  ;; Damit Links innerhalb eins Dokuments funktionieren muessen wir alle
+  ;; "[#id](#id)" Vorkommnisse durch "[step](#id)" austauschen.
 
   (require '[markdown.core :as md])
   (def input       "# This is a test\n <a name=\"abcde\">some<a/> code follows\n```clojure\n(defn foo [])\n```Let's link back to [AbCdE](abcde) ")
   (def input "hello [github](http://github.com)")
   (def input "hello [github](#x1)")
+  (def input "hello [github](#x1)")
   (def parser (.build (Parser/builder)))
   (def document (.parse parser input))
   (def renderer (.build (HtmlRenderer/builder)))
   (.render renderer document);  // "<p>This is <em>Markdown</em></p>\n"
-  (println 
-    (md/md-to-html-string input)
-      "# This is a test\n <a name=\"abcde\">some<a/> code follows\n```clojure\n(defn foo [])\n```Let's link back to [AbCdE](#abcde) ")
+  (println (md/md-to-html-string input))
+
+
+  (println (md/md-to-html-string "hello [github](#x1)"))
+
   )

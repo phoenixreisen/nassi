@@ -1,26 +1,28 @@
 DIAGRAM		= STATEMENT [_ STATEMENT]*
 
-<STATEMENT>	= FOR	
-            | WHILE	
-            | UNTIL	
-            | IF	
-            | SWITCH
-            | TEXT
+<STATEMENT>	= ( FOR	
+            |   WHILE	
+            |   UNTIL	
+            |   IF	
+            |   SWITCH
+            |   TEXT) _
+            
 
-FOR		    = <('for'   | 'FOR')>   _ TEXT _ BLOCK
-WHILE		= <('while' | 'WHILE')> _ TEXT _ BLOCK
-UNTIL		= <('until' | 'UNTIL')> _ TEXT _ BLOCK
+FOR		    = <'for'>   _ TEXT _ BLOCK
+WHILE		= <'while'> _ TEXT _ BLOCK
+UNTIL		= <'until'> _ TEXT _ BLOCK
 
-IF		    = <('if'    | 'IF')> _ TEXT _ BLOCK [_ ELSE]
-ELSE        = <('else'  | 'ELSE')> _ BLOCK
+IF		    = <'if'> _ TEXT _ BLOCK [_ ELSE]
+ELSE        = <'else'> _ BLOCK
 
-SWITCH		= <('switch'  | 'SWITCH')>  _ TEXT _ <'{'> _ CASES _ <'}'>
+SWITCH		= <'switch'>  _ TEXT _ <'{'> _ CASES _ <'}'>
 CASES		= (CASE | DEFAULT) [_ (CASE | DEFAULT)]*
-CASE		= <('case'    | 'CASE')>    _  TEXT _  BLOCK
-DEFAULT		= <('default' | 'DEFAULT')> _ [TEXT _] BLOCK
+CASE		= <'case'>    _  TEXT _  BLOCK
+DEFAULT		= <'default'> _ [TEXT _] BLOCK
 
 BLOCK		= <'{'> [_ STATEMENT]+ _ <'}'>
 <_>         = <#"[\s]*">
+ID          = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
 
 <TEXT>      = PARAGRAPH / SENTENCE
 SENTENCE    = #"[^\n^{^}]+" 
