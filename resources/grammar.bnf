@@ -5,7 +5,7 @@ DIAGRAM		= STATEMENT [_ STATEMENT]*
             |   UNTIL	
             |   IF	
             |   SWITCH
-            |   TEXT) _
+            |   TEXTSTMT) _
             
 
 FOR		    = <'for'>   _ TEXT _ BLOCK
@@ -24,6 +24,7 @@ BLOCK		= <'{'> [_ STATEMENT]+ _ <'}'>
 <_>         = <#"[\s]*">
 ID          = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
 
+TEXTSTMT    = TEXT
 <TEXT>      = PARAGRAPH / SENTENCE
 SENTENCE    = #"[^\n^{^}]+" 
 PARAGRAPH	= #"(?s)\"\"\".*?\"\"\""

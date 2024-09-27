@@ -19,7 +19,9 @@
   (swap! step (fn [s] (pop s))))
 
 (defn- node-type 
-  "A node is a vector whose first element is a keyword from the grammar.
+  "A node is a vector whose first element is a keyword which corresponds with
+  some left hand side value from the grammar.
+
   Returns said keyword, when `x` is a node."
   [x] 
   (when (vector? x) 
@@ -96,7 +98,6 @@
           (let [[_ id step _] x]
             (when id
               (when-some [node (get @res id)]
-                (println id)
                 (throw (ex-info (str "ID " id " is not unique!")
                          {:a node
                           :b x})))

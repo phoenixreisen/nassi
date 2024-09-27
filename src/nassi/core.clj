@@ -21,33 +21,91 @@
   (parse (slurp x)))
 
 (defn- xf-diagram [& xs] [:div.diagram xs])
-(defn- xf-block [& xs] [:div.block xs])
-(defn- xf-for [s b] [:div.for s b])
-(defn- xf-while [s b] [:div.while s b])
-(defn- xf-until [s b] [:div.until s b])
-(defn- xf-switch [exp cases] [:div.switch exp cases])
+
+(defn- xf-block [& xs] xs)
+
+(defn- xf-for [exp block] 
+  [:div.for 
+   [:div.expression 
+    [:div.expression-text exp]]
+   [:div.statement block]])
+
+(defn- xf-while [exp block] 
+  [:div.while 
+   [:div.expression 
+    [:div.expression-text exp]]
+   [:div.statement block]])
+
+(defn- xf-until [exp block] 
+  [:div.until 
+   [:div.expression 
+    [:div.expression-text exp]]
+   [:div.statement block]])
+
+(defn- xf-switch [exp cases] 
+  [:div.branching 
+   [:div.expression 
+    [:div.expression-text exp]]
+   cases])
+
 (defn- xf-cases [ & cases] cases)
-(defn- xf-case [exp block] [:div exp block])
+
+(defn- xf-case [exp block] 
+ [:div.branch 
+  [:div.expression 
+   [:div.expression-text exp]]
+  [:div.statement block]]) 
+
+(defn- xf-default [exp block] 
+ [:div.default-branch 
+  [:div.expression 
+   [:div.expression-text exp]]
+  [:div.statement block]]) 
+
+(defn- xf-textstmt [x]
+  [:div.block x])
+
+(defn- process-internal-links 
+  "Internal links have the form `[#id-of-something](#id-of-something)`. 
+  This FN replaces the link-text of each internal link with its corresponding
+  step number."
+  [id->step s]
+  (reduce (fn [ret [id step]]
+            (str/replace ret (str "[" id "]") (str "[" step "]"))) 
+    s id->step))
 
 (defn- xf-text [id->step id st s] 
-  [:div.block 
-   {:id (when id (subs id 1))} ; remove # from start 
-   [:b st] ": " (md/md-to-html-string s)])
+  ;; TODO das aeussere DIV brauchen wir momentan nur als eventuelles Ziel fuer
+  ;; Links. Kann man dann spaeter in das DIV verlagern, das den Step anzeigt.
+  [:div {:id (when id (subs id 1))} ; remove # from start of id
+   (md/md-to-html-string 
+     (str "<b>" st ":</b>" 
+       (process-internal-links id->step s)))])
+
+(defn- xf-else [block]
+  [:div.default-branch 
+   [:div.expression 
+    [:div.expression-text "false"]]
+   [:div.statement block]])
 
 (defn- xf-if 
-  ([s yes] 
-   [:div.if [:div [:b s]]
-    [:div 
-     [:div [:b "true"]]
-     [:div yes]]])
-  ([s yes no] 
-   [:div.if [:div [:b s]]
-    [:div 
-     [:div [:b "true"]]
-     [:div yes]]
-    [:div 
-     [:div [:b "false"]]
-     [:div no]]]))
+  ([exp block] 
+   [:div.branching 
+    [:div.expression 
+     [:div.expression-text exp]]
+    [:div.branch 
+     [:div.expression 
+      [:div.expression-text "true"]]
+     [:div.statement block]]])
+  ([exp block else] 
+   [:div.branching 
+    [:div.expression 
+     [:div.expression-text exp]]
+    [:div.branch 
+     [:div.expression 
+      [:div.expression-text "true"]]
+     [:div.statement block]]
+    else]))
 
 (defn- to-html [x]
   (let [ast (steps/add-steps
@@ -56,6 +114,7 @@
     (h/html 
       (insta/transform 
         {:DIAGRAM     xf-diagram
+         :TEXTSTMT    xf-textstmt
          :PARAGRAPH   (partial xf-text id->step)
          :SENTENCE    (partial xf-text id->step)
          :BLOCK       xf-block
@@ -65,9 +124,12 @@
          :SWITCH      xf-switch
          :CASES       xf-cases
          :CASE        xf-case
-         :DEFAULT     xf-case
+         :DEFAULT     xf-default
+         :ELSE        xf-else
          :IF          xf-if} 
         ast))))
+
+#_(println (to-html (io/resource "test/if2.uc")))
 
 #_(spit "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.html"
   (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
@@ -77,16 +139,17 @@
   (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
     (to-html (io/resource "GutenMorgen2.uc")) "</body> </html>"))
 
+#_(spit "/home/jan/tmp/uc.html"
+  (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
+    (to-html (io/resource "test/if2.uc")) "</body> </html>"))
+
 ;(def a (parse (slurp (io/resource "ex0.uc"))))
 ;(def b (parse (slurp (io/resource "ex1.uc"))))
 ;(e/diff a b)
 
 ; -------------------------------------------------------------
 
-;; - Warnen, wenn die gleiche ID in verschiedenen SENTENCE bzw. PARAGRAPH
-;;   Knoten verwendet wird
 ;; - Warnen, wenn eine Exception nicht behandelt wird.
-;; - Ueberlegen, wie man Schritte referenziert
 
 (comment
 (parse-diagram (io/resource "GutenMorgen2.uc"))

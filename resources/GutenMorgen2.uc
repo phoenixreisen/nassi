@@ -1,6 +1,6 @@
 Der Wecker klingelt.
 
-SWITCH #WT-pruefen Wochentag pruefen [#Zaehne](#Zaehne) {
+SWITCH Wochentag pruefen {
 
   CASE Samstag oder Sonntag? {
     Wecker ausschalten
@@ -11,14 +11,14 @@ SWITCH #WT-pruefen Wochentag pruefen [#Zaehne](#Zaehne) {
   DEFAULT Wertktag {
 
     WHILE solange ich noch min 5 Minuten Zeit habe {
-      Wecker ausmachen
+      Snooze Taste des Weckers druecken 
       bisschen weiter doesen...
     }
 
     Wecker ausmachen
     Aufstehen
 
-    IF #Lust Lust auf Kaffee {
+    IF Lust auf Kaffee? {
       Kaffe kochen
       Tasse holen
 
@@ -27,16 +27,14 @@ SWITCH #WT-pruefen Wochentag pruefen [#Zaehne](#Zaehne) {
         Tasse Kaffee trinken
       }
     }
+    ELSE {
+        Weiter mit Schritt [#duschen](#duschen).
+    }
 
-    Duschen gehen
+    Zaehne putzen
 
-    
-    """ #Zaehne 
-    Zahnpflege:
-    - Zahnseide verwenden
-    - Zaehne gruendlich putzen
-    - Zahnzwischenraumbuerstchen benutzen
-    - Mundspuelung"""
+    #duschen Duschen gehen
+
   }
 }
 
