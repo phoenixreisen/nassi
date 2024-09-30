@@ -1,16 +1,18 @@
 html {
-  /* Scale size */
-  font-size: 30px;
+  /* Scale size here. */
+  font-size: 20px;
 }
 
 .diagram {
   width: fit-content;
 }
 
+.expression {
+}
+
 .statement {
-  display: grid;
-  justify-items: stretch;
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
 }
 
 .statement > .block:first-child, 
@@ -36,6 +38,23 @@ html {
 .statement > .until:last-child,
 .statement > .branching:last-child {
   border-bottom: none;
+}
+
+.statement:after {
+  display: block;
+  /* Make this last pseudo-element take the remaining space. */
+  flex-grow: 1;
+  content: '';
+  border-top: var(--border-thickness) solid black;
+  margin-bottom: calc(-1 * var(--border-thickness));
+  background-color: light-gray;
+  background: repeating-linear-gradient(
+  -45deg,
+  transparent,
+  transparent 0.5rem,
+  whitesmoke 0.5rem,
+  whitesmoke 1rem 
+  );
 }
 
 .block + .block,
@@ -105,11 +124,14 @@ html {
   border-left: var(--border-thickness) solid black;
 }
 
+
 .branching {
   display: grid;
   grid-template-rows: auto auto auto;
   grid-auto-flow: column;
-
+  /* We use a negative margin on some children with background. This prevents
+  the background from overlapping with the bottom border. */
+  overflow: hidden;
   border: var(--border-thickness) solid black;
 }
 
