@@ -1,1 +1,1 @@
-[:DIAGRAM [:WHILE [:SENTENCE "Solange ich Durst habe "] [:BLOCK [:SENTENCE "Wasser trinken."]]]]
+[:DIAGRAM [:WHILE [:SENTENCE "Solange ich Durst habe "] [:BLOCK [:TEXTSTMT [:SENTENCE "Wasser trinken."]]]]]

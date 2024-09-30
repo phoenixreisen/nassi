@@ -1,1 +1,1 @@
-[:DIAGRAM [:IF [:SENTENCE "Hunger? "] [:BLOCK [:SENTENCE "Essen"]] [:ELSE [:BLOCK [:SENTENCE "Trinken"]]]]]
+[:DIAGRAM [:IF [:SENTENCE "Hunger? "] [:BLOCK [:TEXTSTMT [:SENTENCE "Essen"]]] [:ELSE [:BLOCK [:TEXTSTMT [:SENTENCE "Trinken"]]]]]]
