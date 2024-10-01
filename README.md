@@ -20,5 +20,6 @@ $ lein clean; lein uberjar
 
 ## License
 
-Copyright 2024 Phoenix Reisen GmbH
+Copyright (c) 2024 Phoenix Reisen GmbH
+
 BSD 3-Clause (see file LICENSE).

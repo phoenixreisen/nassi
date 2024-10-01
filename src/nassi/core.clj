@@ -3,14 +3,16 @@
     (org.commonmark.node Node)
     (org.commonmark.parser Parser)
     (org.commonmark.renderer.html HtmlRenderer))
-  (:require [clojure.string :as str]
-            [nassi.steps :as steps]
-            [editscript.core :as e]
-            [instaparse.core :as insta]
-            [hiccup.core :as h]
-            [markdown.core :as md]
-            [clojure.java.io :as io]
-            [clojure.walk :as w]))
+  (:require 
+    [clojure.java.io :as io]
+    [clojure.string :as str]
+    [clojure.walk :as w]
+    [editscript.core :as e]
+    [hiccup.core :as h]
+    [instaparse.core :as insta]
+    [markdown.core :as md]
+    [nassi.md-para :as md-para]
+    [nassi.steps :as steps]))
 
 (def ^:private parse 
   "This FN accepts a textual representation of a nassi-shneiderman diagram and
@@ -80,7 +82,8 @@
   [:div {:id (when id (subs id 1))} ; remove # from start of id
    (md/md-to-html-string 
      (str "<b>" st ":</b>" 
-       (process-internal-links id->step s)))])
+       (process-internal-links id->step 
+         (md-para/trim-paragraph s))))])
 
 (defn- xf-else [block]
   [:div.default-branch 

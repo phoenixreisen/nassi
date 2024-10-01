@@ -1,6 +1,7 @@
 (ns nassi.steps
-  (:require [clojure.string :as str]
-            [clojure.walk :as w]))
+  (:require 
+    [clojure.string :as str]
+    [clojure.walk :as w]))
 
 (defn- mk-step [] (atom [0]))
 

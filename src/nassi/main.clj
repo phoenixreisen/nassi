@@ -78,3 +78,7 @@
     (if exit-message
       (exit (if ok? 0 1) exit-message)
       (generate-html-file input-file options))))
+
+#_(generate-html-file (io/resource "GutenMorgen2.uc") 
+    {:inline-css true
+     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})

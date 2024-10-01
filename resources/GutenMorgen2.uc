@@ -31,7 +31,12 @@ SWITCH Wochentag pruefen {
         Weiter mit Schritt [#duschen](#duschen).
     }
 
-    Zaehne putzen
+    """
+    Zahnpflege:
+
+    - Zahnseide benutzen
+    - Zaehne putzen
+    """
 
     #duschen Duschen gehen
 
