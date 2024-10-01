@@ -107,7 +107,7 @@
      [:div.statement block]]
     else]))
 
-(defn- to-html [x]
+(defn to-html [x]
   (let [ast (steps/add-steps
               (parse-diagram x))
         id->step (steps/id->step ast)]
@@ -128,8 +128,6 @@
          :ELSE        xf-else
          :IF          xf-if} 
         ast))))
-
-#_(println (to-html (io/resource "test/if2.uc")))
 
 #_(spit "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.html"
   (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
