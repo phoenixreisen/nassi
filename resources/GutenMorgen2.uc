@@ -28,7 +28,7 @@ SWITCH Wochentag pruefen {
       }
     }
     ELSE {
-        Weiter mit Schritt [#duschen](#duschen).
+        Weiter mit Schritt [!!duschen](#duschen).
     }
 
     """
@@ -38,7 +38,7 @@ SWITCH Wochentag pruefen {
     - Zaehne putzen
     """
 
-    #duschen Duschen gehen
+    !!duschen Duschen gehen
 
   }
 }

@@ -79,7 +79,7 @@
 (defn- xf-text [id->step id st s] 
   ;; TODO das aeussere DIV brauchen wir momentan nur als eventuelles Ziel fuer
   ;; Links. Kann man dann spaeter in das DIV verlagern, das den Step anzeigt.
-  [:div {:id (when id (subs id 1))} ; remove # from start of id
+  [:div {:id (when id (subs id 2))} ; remove !! from start of id
    (md/md-to-html-string 
      (str "<b>" st ":</b>" 
        (process-internal-links id->step 
@@ -131,18 +131,6 @@
          :ELSE        xf-else
          :IF          xf-if} 
         ast))))
-
-#_(spit "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.html"
-  (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
-    (to-html "/home/jan/repos/phoenixreisen/dfb/doc/UC-001_Vorlage-erstellen.uc") "</body> </html>"))
-
-#_(spit "/home/jan/tmp/uc.html"
-  (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
-    (to-html (io/resource "GutenMorgen2.uc")) "</body> </html>"))
-
-#_(spit "/home/jan/tmp/uc.html"
-  (str "<html> <head> <link rel=\"stylesheet\" href=\"diagram.css\"> </head><body>"
-    (to-html (io/resource "test/if2.uc")) "</body> </html>"))
 
 ;(def a (parse (slurp (io/resource "ex0.uc"))))
 ;(def b (parse (slurp (io/resource "ex1.uc"))))

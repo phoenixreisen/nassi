@@ -29,32 +29,35 @@
     (first x)))
 
 (def ^:private node-id-regex  
-  "Matches a pound-symbol followed by a valid HTML id.
+  "Matches double exclamation marks followed by a valid HTML id at the start of
+  a string (ignoring leading whitespace in front of the id).
 
   Valid HTML id attribute values begin with a letter and must comprise only
   letters ( a - Z ), digits ( 0 - 9 ), hyphens ( - ), underscores ( _ ), and
-  periods ( . )." 
-  #"(?s)\s*(#[A-Za-z][\.A-Za-z0-9_-]+).*")
+  periods ( . ).
+  
+  Returns three groups, if this regex matches:
+  
+    - The leading whitespace before the id.
+    - The id itself.
+    - The text following the id.
+
+  Ex.
+
+  ```
+  (re-matches node-id-regex \"\\t!!ID-1 Hello, World! \")
+  => [\"\\t!!ID-1 Hello, World! \" \"\\t\" \"!!ID-1\" \" Hello, World! \"]
+  ```" 
+  #"(?s)(\s*)(!![A-Za-z][\.A-Za-z0-9_-]+)(.*)")
 
 (defn- process-sentence-node
   "Transforms a SENTENCE node like so:
 
      `[:SENTENCE <optional-id-and-text>]` 
-  => `[:SENTENCE <optional-id> <step> <text>]` 
-
-  e.g.
-
-  ```
-  (process-sentence-node [:SENTENCE \" #x1-2 Bla, bla, bla\"] \"1.2\")
-  => [:SENTENCE \"#x1-2\" \"1.2\" \"Bla, bla, bla\"]
-
-  (process-sentence-node [:SENTENCE \"Bla, bla, bla\"] \"1.2\")
-  => [:SENTENCE nil \"1.2\" \"Bla, bla, bla\"]
-  ```"
+  => `[:SENTENCE <optional-id> <step> <text>]`"
   [[type s] step]
-  (if-some [[_ id] (re-matches node-id-regex s)]
-    [:SENTENCE id step (-> (str/replace-first s id "")
-                           (str/trim))]
+  (if-some [[_ space id text] (re-matches node-id-regex s)]
+    [:SENTENCE id step (str/trim text)]
     [:SENTENCE nil step (str/trim s)]))
 
 (defn- process-paragraph-node
@@ -64,8 +67,8 @@
   => `[:PARAGRAPH <optional-id> <step> <text>]`"
   [[type s] step]
   (let [s2 (subs s 3 (- (count s) 3))] ; remove """ from both ends
-    (if-some [[_ id] (re-matches node-id-regex s2)]
-      [:PARAGRAPH id step (str/replace-first s2 id "")]
+    (if-some [[_ space id text] (re-matches node-id-regex s2)]
+      [:PARAGRAPH id step (str space (str/triml text))]
       [:PARAGRAPH nil step s2])))   
 
 (defn add-steps 
@@ -106,29 +109,3 @@
         x)
       ast)
     @res))
-
-(comment TEST-CODE
-(let [s1  "   #Check-1\n In this step we check that, ..."
-      s2  "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""
-     s "hello";s1; (subs s2 3) 
-     [_ id] 
-(re-matches node-id-regex s)
-      ]
-  id)
-
-(process-sentence-node [:SENTENCE " #x1-2 Bla, bla, bla"] "1.2")
-
-  (= (process-sentence-node [:SENTENCE "Bla, bla, bla"] "1.2")
-   [:SENTENCE nil "1.2" "Bla, bla, bla"])
-
-
-  (process-sentence-node [:SENTENCE "   #Check-1 In this step we check that, ..."])
-  (process-sentence-node [:SENTENCE " In this step we check that, ..."])
-  (process-paragraph-node
-[:PARAGRAPH "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""] "1.3")
-
-  (process-paragraph-node
-    [:PARAGRAPH "\"\"\"\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""] "1.2")
-  (node-id
-    [:PARAGRAPH "\"\"\" #Zaehne\nZahnpflege:\n- Zahnseide verwenden\n- Zaehne gruendlich putzen\n- Zahnzwischenraumbuerstchen benutzen\n- Mundspuelung\"\"\""])
-)
