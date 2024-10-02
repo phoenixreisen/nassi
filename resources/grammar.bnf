@@ -1,12 +1,6 @@
 DIAGRAM		= STATEMENT [_ STATEMENT]*
 
-<STATEMENT>	= ( FOR	
-            |   WHILE	
-            |   UNTIL	
-            |   IF	
-            |   SWITCH
-            |   TEXTSTMT) _
-            
+<STATEMENT>	= _ (FOR | WHILE | UNTIL | IF | SWITCH | TEXTSTMT) _
 
 FOR		    = <'for'>   _ TEXT _ BLOCK
 WHILE		= <'while'> _ TEXT _ BLOCK
