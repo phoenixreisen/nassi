@@ -82,3 +82,11 @@
 #_(generate-html-file (io/resource "GutenMorgen2.uc") 
     {:inline-css true
      :output "/home/jan/repos/phoenixreisen/nassi/t.html"})
+
+#_(generate-html-file (io/resource "test/throw1.uc")
+    {:inline-css true
+     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})
+
+#_(generate-html-file "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_Login-mit-BN-und-Nachname.uc"
+    {:inline-css true
+     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})

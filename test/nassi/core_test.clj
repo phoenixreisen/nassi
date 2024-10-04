@@ -38,6 +38,7 @@
     (approve "if1.uc" )
     (approve "if2.uc" )
     (approve "switch2.uc")
+    (approve "throw1.uc")
     (approve "GutenMorgen.uc")))
 
-;(parse-diagram (io/resource (str "test/GutenMorgen.uc")))
+;(parse-diagram (io/resource (str "test/throw1.uc")))

@@ -110,6 +110,25 @@
      [:div.statement block]]
     else]))
 
+(defn- xf-throw [[_ error-code] exp] 
+  [:div.block ;; TODO FIXME 
+   [:b "&#x25C0 " (subs error-code 1) ] 
+   exp])
+
+(defn- xf-catch [handlers] 
+  [:div.branching handlers])
+
+(defn- xf-handlers [ & handlers] handlers)
+
+(defn- xf-errorcoderef [error-code step]
+  [:b step ": &#x25B6 " (subs error-code 1)])
+
+(defn- xf-handle [x block] 
+ [:div.branch 
+  [:div.expression 
+   [:div.expression-text x]]
+  [:div.statement block]]) 
+
 (defn to-html [x]
   (let [ast (steps/add-steps
               (parse-diagram x))
@@ -129,18 +148,29 @@
          :CASE        xf-case
          :DEFAULT     xf-default
          :ELSE        xf-else
-         :IF          xf-if} 
+         :IF          xf-if
+         :THROW       xf-throw
+         :CATCH       xf-catch
+         :HANDLERS    xf-handlers
+         :HANDLE      xf-handle
+         :ERRORCODEREF xf-errorcoderef
+         } 
         ast))))
 
 ;(def a (parse (slurp (io/resource "ex0.uc"))))
 ;(def b (parse (slurp (io/resource "ex1.uc"))))
 ;(e/diff a b)
 
+
 ; -------------------------------------------------------------
 
 ;; - Warnen, wenn eine Exception nicht behandelt wird.
 
 (comment
+
+  (parse-diagram "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_Login-mit-BN-und-Nachname.uc")
+(parse-diagram (io/resource "test/throw1.uc"))
+
 (parse-diagram (io/resource "GutenMorgen2.uc"))
 
   ;; Damit Links innerhalb eins Dokuments funktionieren muessen wir alle

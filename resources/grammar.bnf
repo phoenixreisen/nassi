@@ -1,25 +1,30 @@
-DIAGRAM		= STATEMENT [_ STATEMENT]*
+DIAGRAM     = STATEMENT [_ STATEMENT]*
 
-<STATEMENT>	= _ (FOR | WHILE | UNTIL | IF | SWITCH | TEXTSTMT) _
+<STATEMENT> = _ (FOR | WHILE | UNTIL | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
 
-FOR		    = <'for'>   _ TEXT _ BLOCK
-WHILE		= <'while'> _ TEXT _ BLOCK
-UNTIL		= <'until'> _ TEXT _ BLOCK
+THROW       = <'throw'> _ ERRORCODE _ TEXT
+FOR         = <'for'>   _ TEXT _ BLOCK
+WHILE       = <'while'> _ TEXT _ BLOCK
+UNTIL       = <'until'> _ TEXT _ BLOCK
 
-IF		    = <'if'> _ TEXT _ BLOCK [_ ELSE]
+IF          = <'if'> _ TEXT _ BLOCK [_ ELSE]
 ELSE        = <'else'> _ BLOCK
 
-SWITCH		= <'switch'>  _ TEXT _ <'{'> _ CASES _ <'}'>
-CASES		= (CASE | DEFAULT) [_ (CASE | DEFAULT)]*
-CASE		= <'case'>    _  TEXT _  BLOCK
-DEFAULT		= <'default'> _ [TEXT _] BLOCK
+CATCH       = <'catch'> _ <'{'> _ HANDLERS _ <'}'>
+HANDLERS    = HANDLE [_ HANDLE]*
+HANDLE      = <'handle'> _ ERRORCODEREF _ BLOCK
 
-BLOCK		= <'{'> [_ STATEMENT]+ _ <'}'>
+SWITCH      = <'switch'>  _ TEXT _ <'{'> _ CASES _ <'}'>
+CASES       = (CASE | DEFAULT) [_ (CASE | DEFAULT)]*
+CASE        = <'case'>    _  TEXT _  BLOCK
+DEFAULT     = <'default'> _ [TEXT _] BLOCK
+
+BLOCK       = <'{'> [_ STATEMENT]+ _ <'}'>
 <_>         = <#"[\s]*">
-ID          = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
-
+ERRORCODE   = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
+ERRORCODEREF = ERRORCODE
 TEXTSTMT    = TEXT
 <TEXT>      = PARAGRAPH / SENTENCE
 SENTENCE    = #"[^\n^{^}]+" 
-PARAGRAPH	= #"(?s)\"\"\".*?\"\"\""
+PARAGRAPH   = #"(?s)\"\"\".*?\"\"\""
 

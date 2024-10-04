@@ -1,23 +1,8 @@
 (ns nassi.steps
   (:require 
+    [nassi.stepper :as stepper]
     [clojure.string :as str]
     [clojure.walk :as w]))
-
-(defn- mk-step [] (atom [0]))
-
-(defn- step-to-str [step]
-  (str/join "." step))
-
-(defn- inc-step! [step] 
-  (->> (swap! step 
-         (fn [s] (conj (pop s) (inc (last s)))))
-       (str/join ".")))
-
-(defn- push-step! [step]
-  (swap! step (fn [s] (conj s 0))))
-
-(defn- pop-step! [step]
-  (swap! step (fn [s] (pop s))))
 
 (defn- node-type 
   "A node is a vector whose first element is a keyword which corresponds with
@@ -56,9 +41,10 @@
      `[:SENTENCE <optional-id-and-text>]` 
   => `[:SENTENCE <optional-id> <step> <text>]`"
   [[type s] step]
+  (assert (= type :SENTENCE))
   (if-some [[_ space id text] (re-matches node-id-regex s)]
-    [:SENTENCE id step (str/trim text)]
-    [:SENTENCE nil step (str/trim s)]))
+    [type id step (str/trim text)]
+    [type nil step (str/trim s)]))
 
 (defn- process-paragraph-node
   "Transforms a PARAGRAPH node like so:
@@ -66,26 +52,44 @@
      `[:PARAGRAPH <optional-id-and-text>]` 
   => `[:PARAGRAPH <optional-id> <step> <text>]`"
   [[type s] step]
+  (assert (= type :PARAGRAPH))
   (let [s2 (subs s 3 (- (count s) 3))] ; remove """ from both ends
     (if-some [[_ space id text] (re-matches node-id-regex s2)]
-      [:PARAGRAPH id step (str space (str/triml text))]
-      [:PARAGRAPH nil step s2])))   
+      [type id step (str space (str/triml text))]
+      [type nil step s2])))   
+
+(defn- process-errorcoderef-node
+  "Transforms a ERRORCODE node like so:
+
+     `[:ERRORCODEREF [:ERRORCODE <error-code>]]` 
+  => `[:ERRORCODEREF <error-code> <step>]`"
+  [[type [_ error-code]] stepper] 
+  (assert (= type :ERRORCODEREF))
+  [type error-code (stepper/fetch-step! stepper error-code)])
 
 (defn add-steps 
   "Adds steps to each SENTENCE- resp. PARAGRAPH node."
   [ast]
-  (let [stp (mk-step)]
+  (let [stp (stepper/create)]
     (w/postwalk
       (fn [x] 
         (cond
-          (= :CASES x)                  (do (push-step! stp) x)
-          (= :CASES (node-type x))      (do (pop-step! stp) x)
-          (= :BLOCK x)                  (do (push-step! stp) x)
-          (= :BLOCK (node-type x))      (do (pop-step! stp) x)
-          (= :ELSE x)                   (do (inc-step! stp) x)
-          (= :SENTENCE (node-type x))   (process-sentence-node x (inc-step! stp))
-          (= :PARAGRAPH (node-type x))  (process-paragraph-node x (inc-step! stp))
-          :else x))
+          (= :CASES x)                    (do (stepper/add-step! stp) x)
+          (= :CASES (node-type x))        (do (stepper/remove-step! stp) x)
+          (= :BLOCK x)                    (do (stepper/add-step! stp) x)
+          (= :BLOCK (node-type x))        (do (stepper/remove-step! stp) x)
+          (= :ELSE x)                     (do (stepper/inc-step! stp) x)
+          (= :SENTENCE (node-type x))     (process-sentence-node x 
+                                            (stepper/inc-step! stp))
+          (= :PARAGRAPH (node-type x))    (process-paragraph-node x 
+                                            (stepper/inc-step! stp))
+          (= :THROW (node-type x))        (let [error-code (second (second x))]
+                                            (stepper/pin-step! stp error-code)
+                                            x)
+          (= :ERRORCODEREF (node-type x)) (process-errorcoderef-node x stp) 
+          (= :HANDLE (node-type x))       (do (stepper/pop-step! stp) x)
+          :else x)
+        )
       ast)))
 
 (defn id->step
