@@ -8,7 +8,6 @@ pom.xml
 pom.xml.asc
 *.log
 *.class
-*.jar
 *.swp
 *.iml
 /.lein-*

@@ -6,8 +6,10 @@ representations.
 
 ## Usage
 
+The executable JAR is in the `bin` directory.
+
 ```
-java -jar nassi.jar
+$ java -jar bin/nassi.jar
 ```
 
 
