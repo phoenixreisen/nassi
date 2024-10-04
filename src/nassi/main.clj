@@ -8,6 +8,10 @@
 
 (def ^:private cli-options
   [["-o" "--output <file>" "Set output file name."]
+   [nil "--opt-true LABEL" "Set label for true-branches in if-statements."
+    :default "yes"] 
+   [nil "--opt-false LABEL" "Set label for false-branches in if-statements."
+    :default "no"] 
    [nil "--[no-]inline-css" "Include CSS in HTML." :default true]
    ["-h" "--help" "Show this help and exit."]])
 
@@ -64,14 +68,18 @@
      "<link rel=\"stylesheet\" type=\"text/css\" href=\"diagram.css\">" 
      "</head>" "<body>" html "</body>" "</html>"]))
 
-(defn- generate-html-file [input-file {:keys [inline-css output]}]
-  (let [diagram (core/to-html input-file)
-        html (if inline-css 
-               (generate-html-with-inline-css diagram)
-               (generate-html-with-extern-css diagram))]
-    (if output
-      (spit output html)
-      (println html))))
+(defn- generate-html-file [input-file {:keys [inline-css output 
+                                              opt-true opt-false]}]
+  (with-bindings {#'nassi.core/*gen-options* 
+                  {:true opt-true
+                   :false opt-false}}
+    (let [diagram (core/to-html input-file)
+          html (if inline-css 
+                 (generate-html-with-inline-css diagram)
+                 (generate-html-with-extern-css diagram))]
+      (if output
+        (spit output html)
+        (println html)))))
 
 (defn -main [& args]
   (let [{:keys [input-file options exit-message ok?]} (validate-args args)]

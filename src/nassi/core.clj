@@ -14,6 +14,10 @@
     [nassi.md-para :as md-para]
     [nassi.steps :as steps]))
 
+(def ^:dynamic *gen-options* 
+  {:true "true"
+   :false "false"})
+
 (def ^:private parse 
   "This FN accepts a textual representation of a nassi-shneiderman diagram and
   returns either an abstract syntax tree, or a failure."
@@ -88,7 +92,7 @@
 (defn- xf-else [block]
   [:div.default-branch 
    [:div.expression 
-    [:div.expression-text "false"]]
+    [:div.expression-text (get *gen-options* :false)]]
    [:div.statement block]])
 
 (defn- xf-if 
@@ -98,7 +102,7 @@
      [:div.expression-text exp]]
     [:div.branch 
      [:div.expression 
-      [:div.expression-text "true"]]
+      [:div.expression-text (get *gen-options* :true)]]
      [:div.statement block]]])
   ([exp block else] 
    [:div.branching 
@@ -106,7 +110,7 @@
      [:div.expression-text exp]]
     [:div.branch 
      [:div.expression 
-      [:div.expression-text "true"]]
+      [:div.expression-text (get *gen-options* :true)]]
      [:div.statement block]]
     else]))
 
