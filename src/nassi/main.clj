@@ -9,9 +9,11 @@
 (def ^:private cli-options
   [["-o" "--output <file>" "Set output file name."]
    [nil "--opt-true LABEL" "Set label for true-branches in if-statements."
-    :default "yes"] 
+    :default "Yes"] 
    [nil "--opt-false LABEL" "Set label for false-branches in if-statements."
-    :default "no"] 
+    :default "No"] 
+   [nil "--opt-catch LABEL" "Set label for exception handling."
+    :default "Exception-Handling"] 
    [nil "--[no-]inline-css" "Include CSS in HTML." :default true]
    ["-h" "--help" "Show this help and exit."]])
 
@@ -69,10 +71,12 @@
      "</head>" "<body>" html "</body>" "</html>"]))
 
 (defn- generate-html-file [input-file {:keys [inline-css output 
-                                              opt-true opt-false]}]
+                                              opt-true opt-false
+                                              opt-catch]}]
   (with-bindings {#'nassi.core/*gen-options* 
                   {:true opt-true
-                   :false opt-false}}
+                   :false opt-false
+                   :catch opt-catch}}
     (let [diagram (core/to-html input-file)
           html (if inline-css 
                  (generate-html-with-inline-css diagram)
@@ -89,11 +93,19 @@
 
 #_(generate-html-file (io/resource "GutenMorgen2.uc") 
     {:inline-css true
-     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})
+     :output "/home/jan/repos/phoenixreisen/nassi/t.html"
+     :opt-true "Ja"
+     :opt-false "Nein"
+     :opt-catch "Behandlung der Ausnahmen"
+     })
 
 #_(generate-html-file (io/resource "test/throw1.uc")
-    {:inline-css true
-     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})
+    {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
+     :inline-css true
+     :opt-true "Ja"
+     :opt-false "Nein"
+     :opt-catch "Behandlung der Ausnahmen"
+     })
 
 #_(generate-html-file "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_Login-mit-BN-und-Nachname.uc"
     {:inline-css true

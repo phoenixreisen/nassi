@@ -9,14 +9,16 @@
     [clojure.walk :as w]
     [editscript.core :as e]
     [hiccup.core :as h]
+    [hiccup2.core :as h2]
     [instaparse.core :as insta]
     [markdown.core :as md]
     [nassi.md-para :as md-para]
     [nassi.steps :as steps]))
 
 (def ^:dynamic *gen-options* 
-  {:true "true"
-   :false "false"})
+  {:true "yes"
+   :false "no"
+   :catch "Exception-Handling"})
 
 (def ^:private parse 
   "This FN accepts a textual representation of a nassi-shneiderman diagram and
@@ -30,46 +32,46 @@
 
 (defn- xf-block [& xs] xs)
 
-(defn- xf-for [exp block] 
+(defn- xf-for [[step text] block] 
   [:div.for 
-   [:div.expression 
-    [:div.expression-text exp]]
+   [:div.expression step
+    [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-while [exp block] 
+(defn- xf-while [[step text] block] 
   [:div.while 
-   [:div.expression 
-    [:div.expression-text exp]]
+   [:div.expression step
+    [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-until [exp block] 
+(defn- xf-until [[step text] block] 
   [:div.until 
-   [:div.expression 
-    [:div.expression-text exp]]
+   [:div.expression step
+    [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-switch [exp cases] 
+(defn- xf-switch [[step text] cases] 
   [:div.branching 
-   [:div.expression 
-    [:div.expression-text exp]]
+   [:div.expression step
+    [:div.expression-text text]]
    cases])
 
 (defn- xf-cases [ & cases] cases)
 
-(defn- xf-case [exp block] 
+(defn- xf-case [[step text] block] 
  [:div.branch 
-  [:div.expression 
-   [:div.expression-text exp]]
+  [:div.expression step
+   [:div.expression-text text]]
   [:div.statement block]]) 
 
-(defn- xf-default [exp block] 
+(defn- xf-default [[step text] block] 
  [:div.default-branch 
-  [:div.expression 
-   [:div.expression-text exp]]
+  [:div.expression step
+   [:div.expression-text text]]
   [:div.statement block]]) 
 
-(defn- xf-textstmt [x]
-  [:div.block x])
+(defn- xf-textstmt [[step text]]
+  [:div.block step [:br] text])
 
 (defn- process-internal-links 
   "Internal links have the form `[#id-of-something](#id-of-something)`. 
@@ -81,51 +83,52 @@
     s id->step))
 
 (defn- xf-text [id->step id st s] 
-  ;; TODO das aeussere DIV brauchen wir momentan nur als eventuelles Ziel fuer
-  ;; Links. Kann man dann spaeter in das DIV verlagern, das den Step anzeigt.
-  [:div {:id (when id (subs id 2))} ; remove !! from start of id
+  [[:div.step {:id (when id (subs id 2))} st] ; remove !! from start of id
    (md/md-to-html-string 
-     (str "<b>" st ":</b>" 
-       (process-internal-links id->step 
-         (md-para/trim-paragraph s))))])
+     (process-internal-links id->step 
+       (md-para/trim-paragraph s)))])
 
 (defn- xf-else [block]
   [:div.default-branch 
    [:div.expression 
-    [:div.expression-text (get *gen-options* :false)]]
+    [:div.expression-text [:b (get *gen-options* :false)]]]
    [:div.statement block]])
 
 (defn- xf-if 
-  ([exp block] 
+  ([[step text] block] 
    [:div.branching 
-    [:div.expression 
-     [:div.expression-text exp]]
+    [:div.expression step
+     [:div.expression-text text]]
     [:div.branch 
      [:div.expression 
-      [:div.expression-text (get *gen-options* :true)]]
+      [:div.expression-text [:b (get *gen-options* :true)]]]
      [:div.statement block]]])
-  ([exp block else] 
+  ([[step text] block else] 
    [:div.branching 
-    [:div.expression 
-     [:div.expression-text exp]]
+    [:div.expression step
+     [:div.expression-text text]]
     [:div.branch 
      [:div.expression 
-      [:div.expression-text (get *gen-options* :true)]]
+      [:div.expression-text [:b (get *gen-options* :true)]]]
      [:div.statement block]]
     else]))
 
-(defn- xf-throw [[_ error-code] exp] 
-  [:div.block ;; TODO FIXME 
-   [:b "&#x25C0 " (subs error-code 1) ] 
-   exp])
+(defn- xf-throw [[_ error-code] [step text]] 
+  [:div.block step 
+   [:b "&#x25C0 " (subs error-code 1)]
+   text])
 
 (defn- xf-catch [handlers] 
-  [:div.branching handlers])
+  [:div.branching 
+   [:div.expression 
+    [:div.expression-text [:b (get *gen-options* :catch)]]]
+   handlers])
 
 (defn- xf-handlers [ & handlers] handlers)
 
 (defn- xf-errorcoderef [error-code step]
-  [:b step ": &#x25B6 " (subs error-code 1)])
+  [:div [:div.step step]
+   [:b "&#x25B6 " (subs error-code 1)]])
 
 (defn- xf-handle [x block] 
  [:div.branch 
@@ -172,6 +175,11 @@
 
 (comment
 
+
+
+  (h/html (xf-textstmt [[:div "hello"][:div "world"]]))
+;  (str (h/html [:div.block [:div "hello"][:div "world"]]))
+
   (parse-diagram "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_Login-mit-BN-und-Nachname.uc")
 (parse-diagram (io/resource "test/throw1.uc"))
 
@@ -195,3 +203,4 @@
   (println (md/md-to-html-string "hello [github](#x1)"))
 
   )
+

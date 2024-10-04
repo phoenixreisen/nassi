@@ -1,3 +1,7 @@
+:root {
+  --border-thickness: 2px;
+}
+
 html {
   /* Scale size here. */
   font-size: 20px;
@@ -8,6 +12,23 @@ html {
 }
 
 .expression {
+}
+
+.step {
+    float: left;
+    margin: 0.2rem;
+
+    box-sizing: border-box;
+    height: 1rem;
+    padding: 0.2rem 0.8rem;
+
+    color: white;
+    background-color: silver;
+    border-radius: 0.25rem;
+
+    font-size: 0.8rem;
+    line-height: 0.8rem;
+    text-align: center;
 }
 
 .statement {
@@ -41,20 +62,19 @@ html {
 }
 
 .statement:after {
-  display: block;
-  /* Make this last pseudo-element take the remaining space. */
-  flex-grow: 1;
-  content: '';
-  border-top: var(--border-thickness) solid black;
-  margin-bottom: calc(-1 * var(--border-thickness));
-  background-color: light-gray;
-  background: repeating-linear-gradient(
-  -45deg,
-  transparent,
-  transparent 0.5rem,
-  whitesmoke 0.5rem,
-  whitesmoke 1rem 
-  );
+    display: block;
+    /* Make this last pseudo-element take the remaining space. */
+    flex-grow: 1;
+    content: '';
+    border-top: var(--border-thickness) solid black;
+    margin-bottom: calc(-1 * var(--border-thickness));
+    background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 0.5rem,
+    whitesmoke 0.5rem,
+    whitesmoke 1rem
+    );
 }
 
 .block + .block,
@@ -75,10 +95,6 @@ html {
 .block {
   padding: 0.5rem;
   border: var(--border-thickness) solid black;
-}
-
-:root {
-  --border-thickness: 0.07rem;
 }
 
 .for, .while {
@@ -173,6 +189,10 @@ html {
 
 .default-branch > .expression > .expression-text {
   text-align: right;
+}
+
+.default-branch > .expression > .step {
+    float: right;
 }
 
 .branch > .statement {
