@@ -12,6 +12,7 @@ html {
 }
 
 .expression {
+  min-height: 2.5rem;
 }
 
 .step {
@@ -157,9 +158,6 @@ html {
 
 
 .branching {
-  display: grid;
-  grid-template-rows: auto auto auto;
-  grid-auto-flow: column;
   /* We use a negative margin on some children with background. This prevents
   the background from overlapping with the bottom border. */
   overflow: hidden;
@@ -167,15 +165,19 @@ html {
 }
 
 .branching > .expression {
-  grid-column: 1 / 100;
   text-align: center;
   border-bottom: var(--border-thickness) solid black;
 }
 
+.branches {
+  display: grid;
+}
+
+
 .branch, .default-branch {
   display: grid;
   grid-template-rows: subgrid;
-  grid-row: 2/4;
+  grid-row: 1/3;
 }
 
 .branch > .expression {
@@ -217,4 +219,9 @@ html {
 .branch > .statement,
 .default-branch > .statement {
   border-top: var(--border-thickness) solid black;
+}
+
+.no-default-branch .branches .branch:last-child .expression,
+.no-default-branch .branches .branch:last-child .statement {
+  border-right: none;
 }

@@ -51,10 +51,11 @@
    [:div.statement block]])
 
 (defn- xf-switch [[step text] cases] 
-  [:div.branching 
+  [:div.branching
    [:div.expression step
     [:div.expression-text text]]
-   cases])
+   [:div.branches
+    cases]])
 
 (defn- xf-cases [ & cases] cases)
 
@@ -96,22 +97,24 @@
 
 (defn- xf-if 
   ([[step text] block] 
-   [:div.branching 
+   [:div.branching.no-default-branch
     [:div.expression step
      [:div.expression-text text]]
-    [:div.branch 
-     [:div.expression 
-      [:div.expression-text [:b (get *gen-options* :true)]]]
-     [:div.statement block]]])
+    [:div.branches
+     [:div.branch 
+      [:div.expression 
+       [:div.expression-text [:b (get *gen-options* :true)]]]
+      [:div.statement block]]]])
   ([[step text] block else] 
-   [:div.branching 
+   [:div.branching
     [:div.expression step
      [:div.expression-text text]]
-    [:div.branch 
-     [:div.expression 
-      [:div.expression-text [:b (get *gen-options* :true)]]]
-     [:div.statement block]]
-    else]))
+    [:div.branches
+     [:div.branch 
+      [:div.expression 
+       [:div.expression-text [:b (get *gen-options* :true)]]]
+      [:div.statement block]]
+     else]]))
 
 (defn- xf-throw [[_ error-code] [step text]] 
   [:div.block step 
@@ -119,10 +122,11 @@
    text])
 
 (defn- xf-catch [handlers] 
-  [:div.branching 
+  [:div.branching.no-default-branch
    [:div.expression 
     [:div.expression-text [:b (get *gen-options* :catch)]]]
-   handlers])
+   [:div.branches
+    handlers]])
 
 (defn- xf-handlers [ & handlers] handlers)
 
