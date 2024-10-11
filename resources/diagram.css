@@ -59,7 +59,7 @@ html {
 .statement > .for:last-child,
 .statement > .until:last-child,
 .statement > .branching:last-child {
-  border-bottom: none;
+  border-bottom: var(--border-thickness) solid black;
 }
 
 .statement:after {
@@ -67,7 +67,6 @@ html {
     /* Make this last pseudo-element take the remaining space. */
     flex-grow: 1;
     content: '';
-    border-top: var(--border-thickness) solid black;
     margin-bottom: calc(-1 * var(--border-thickness));
     background: repeating-linear-gradient(
     -45deg,

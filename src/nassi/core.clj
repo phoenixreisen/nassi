@@ -97,14 +97,17 @@
 
 (defn- xf-if 
   ([[step text] block] 
-   [:div.branching.no-default-branch
+   [:div.branching
     [:div.expression step
      [:div.expression-text text]]
     [:div.branches
      [:div.branch 
       [:div.expression 
        [:div.expression-text [:b (get *gen-options* :true)]]]
-      [:div.statement block]]]])
+      [:div.statement block]]
+     [:div.default-branch
+      [:div.expression]
+      [:div.statement]]]])
   ([[step text] block else] 
    [:div.branching
     [:div.expression step
