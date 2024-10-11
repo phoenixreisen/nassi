@@ -78,7 +78,7 @@ html {
 }
 
 .empty {
-  height: 3rem;
+  min-height: 2.5rem;
   border: var(--border-thickness) solid black;
   background: repeating-linear-gradient(
     -45deg,
@@ -217,4 +217,9 @@ html {
 .branch > .statement,
 .default-branch > .statement {
   border-top: var(--border-thickness) solid black;
+}
+
+.no-default-branch .branches .branch:last-child .expression,
+.no-default-branch .branches .branch:last-child .statement {
+  border-right: none;
 }
