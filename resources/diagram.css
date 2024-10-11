@@ -79,7 +79,7 @@ html {
 }
 
 .empty {
-  height: 3rem;
+  min-height: 2.5rem;
   border: var(--border-thickness) solid black;
   background: repeating-linear-gradient(
     -45deg,
