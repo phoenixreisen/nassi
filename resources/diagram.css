@@ -77,14 +77,29 @@ html {
     );
 }
 
+.empty {
+  min-height: 2.5rem;
+  border: var(--border-thickness) solid black;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 0.5rem,
+    whitesmoke 0.5rem,
+    whitesmoke 1rem
+  );
+}
+
 .block + .block,
 .while + .while, .block + .while, .while + .block,
 .for + .for, .for + .block, .block + .for, .for + .while, .while + .for,
-.until + .until, .until + .block, .block + .until, .until + .while, .while +
-.until, .until + .for, .for + .until,
-.branching + .branching, .branching + .block, .block + .branching, .braching +
-.while, .while + .branchin, .branching + .for, .for + .branching, .branching +
-.until, .until + .branching {
+.until + .until, .until + .block, .block + .until, .until + .while,
+.while + .until, .until + .for, .for + .until,
+.branching + .branching, .branching + .block, .block + .branching,
+.braching + .while, .while + .branchin, .branching + .for, .for + .branching,
+.branching + .until, .until + .branching 
+.empty + .empty, .empty + .block, .block + .empty, .empty + .while,
+.while + .empty, .empty + .for, .for + .empty, .empty + .until,
+.until + .empty, .empty + .branching, .branching + .empty {
   border-top: none;
 }
 
@@ -202,4 +217,9 @@ html {
 .branch > .statement,
 .default-branch > .statement {
   border-top: var(--border-thickness) solid black;
+}
+
+.no-default-branch .branches .branch:last-child .expression,
+.no-default-branch .branches .branch:last-child .statement {
+  border-right: none;
 }
