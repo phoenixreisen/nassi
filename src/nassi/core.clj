@@ -28,6 +28,10 @@
 (defn parse-diagram [x]
   (parse (slurp x)))
 
+(def ^:private ^:const BLACK-RIGHT-POINTING-TRIANGLE "&#x25B6")
+
+(def ^:private ^:const BLACK-LEFT-POINTING-TRIANGLE "&#x25C0")  
+
 (defn- xf-diagram [& xs] [:div.diagram xs])
 
 (defn- xf-block [& xs] xs)
@@ -106,7 +110,8 @@
        [:div.expression-text [:b (get *gen-options* :true)]]]
       [:div.statement block]]
      [:div.default-branch
-      [:div.expression]
+      [:div.expression
+       [:div.expression-text [:b (get *gen-options* :false)]]]
       [:div.statement]]]])
   ([[step text] block else] 
    [:div.branching
@@ -121,21 +126,23 @@
 
 (defn- xf-throw [[_ error-code] [step text]] 
   [:div.block step 
-   [:b "&#x25C0 " (subs error-code 1)]
+   [:b BLACK-LEFT-POINTING-TRIANGLE " " (subs error-code 1)]
    text])
 
 (defn- xf-catch [handlers] 
-  [:div.branching.no-default-branch
-   [:div.expression 
-    [:div.expression-text [:b (get *gen-options* :catch)]]]
-   [:div.branches
-    handlers]])
+  (list 
+    [:div.empty]
+    [:div.branching.no-default-branch
+     [:div.expression 
+      [:div.expression-text [:b (get *gen-options* :catch)]]]
+     [:div.branches
+      handlers]]))
 
 (defn- xf-handlers [ & handlers] handlers)
 
 (defn- xf-errorcoderef [error-code step]
   [:div [:div.step step]
-   [:b "&#x25B6 " (subs error-code 1)]])
+   [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]])
 
 (defn- xf-handle [x block] 
  [:div.branch 
@@ -174,7 +181,6 @@
 ;(def a (parse (slurp (io/resource "ex0.uc"))))
 ;(def b (parse (slurp (io/resource "ex1.uc"))))
 ;(e/diff a b)
-
 
 ; -------------------------------------------------------------
 
