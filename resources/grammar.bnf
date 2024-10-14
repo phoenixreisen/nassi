@@ -1,6 +1,6 @@
 DIAGRAM     = STATEMENT [_ STATEMENT]*
 
-<STATEMENT> = _ (INCLUDE | FOR | WHILE | UNTIL | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
+<STATEMENT> = _ (INCLUDE | FOR | WHILE | UNTIL | SUB | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
 
 INCLUDE     = <'include'> _ FILENAME
 FILENAME    = #"\".*\""
@@ -9,6 +9,7 @@ THROW       = <'throw'> _ ERRORCODE _ TEXT
 FOR         = <'for'>   _ TEXT _ BLOCK
 WHILE       = <'while'> _ TEXT _ BLOCK
 UNTIL       = <'until'> _ TEXT _ BLOCK
+SUB         = <'sub'>   _ TEXT _ BLOCK
 
 IF          = <'if'> _ TEXT _ BLOCK [_ ELSE]
 ELSE        = <'else'> _ BLOCK

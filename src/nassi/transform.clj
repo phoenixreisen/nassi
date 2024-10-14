@@ -1,4 +1,6 @@
 (ns nassi.transform
+  "In this NS contains the functionality to transform an AST into a
+  HTML-Document."
   (:require 
     [nassi.parse :as p]
     [clojure.java.io :as io]
@@ -25,6 +27,12 @@
 (defn- xf-diagram [& xs] [:div.diagram xs])
 
 (defn- xf-block [& xs] xs)
+
+(defn- xf-sub [[step text] block] 
+  [:div.while ;; TODO FIXME when we have CSS class for sub
+   [:div.expression step
+    [:div.expression-text text]]
+   [:div.statement block]])
 
 (defn- xf-for [[step text] block] 
   [:div.for 
@@ -151,6 +159,7 @@
          :PARAGRAPH   (partial xf-text id->step)
          :SENTENCE    (partial xf-text id->step)
          :BLOCK       xf-block
+         :SUB         xf-sub
          :FOR         xf-for
          :WHILE       xf-while
          :UNTIL       xf-until
@@ -167,5 +176,3 @@
          :ERRORCODEREF xf-errorcoderef
          } 
         ast))))
-
-; -------------------------------------------------------------

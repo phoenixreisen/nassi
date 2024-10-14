@@ -13,16 +13,18 @@ endif
 
 syntax clear
 syntax case ignore
-syntax keyword usecaseKeyword if else
-syntax keyword usecaseKeyword switch case default
-syntax keyword usecaseKeyword for while until
-syntax keyword usecaseKeyword throw catch handle
+syntax keyword nassiKeyword if else
+syntax keyword nassiKeyword switch case default
+syntax keyword nassiKeyword for while until sub
+syntax keyword nassiKeyword throw catch handle
+syntax keyword nassiDirective include
 syntax match paragraphDelim '\"\"\"'
 syntax match beginBlock '{'
 syntax match endBlock '}'
 syntax match anchor '!![A-Za-z][\.A-Za-z0-9_-]*'
 
-highlight def link usecaseKeyword Keyword
+highlight def link nassiKeyword Keyword
+highlight def link nassiDirective Include
 highlight def link paragraphDelim Special
 highlight def link beginBlock Special
 highlight def link endBlock Special
