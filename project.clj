@@ -13,6 +13,6 @@
                  ]
 
   :profiles {:uberjar {:aot :all}}
-  :repl-options {:init-ns nassi.core}
+  :repl-options {:init-ns nassi.parse}
   :uberjar-name "nassi.jar"
   :main nassi.main)

@@ -3,7 +3,7 @@
     [clojure.java.io :as io]
     [clojure.string :as str]
     [clojure.tools.cli :as cli]
-    [nassi.core :as core])
+    [nassi.transform :as xf])
   (:gen-class))
 
 (def ^:private cli-options
@@ -73,11 +73,11 @@
 (defn- generate-html-file [input-file {:keys [inline-css output 
                                               opt-true opt-false
                                               opt-catch]}]
-  (with-bindings {#'nassi.core/*gen-options* 
+  (with-bindings {#'nassi.transform/*gen-options* 
                   {:true opt-true
                    :false opt-false
                    :catch opt-catch}}
-    (let [diagram (core/to-html input-file)
+    (let [diagram (xf/to-html input-file)
           html (if inline-css 
                  (generate-html-with-inline-css diagram)
                  (generate-html-with-extern-css diagram))]
@@ -91,22 +91,10 @@
       (exit (if ok? 0 1) exit-message)
       (generate-html-file input-file options))))
 
-#_(generate-html-file (io/resource "GutenMorgen2.uc") 
-    {:inline-css true
-     :output "/home/jan/repos/phoenixreisen/nassi/t.html"
-     :opt-true "Ja"
-     :opt-false "Nein"
-     :opt-catch "Behandlung der Ausnahmen"
-     })
-
-#_(generate-html-file (io/resource "test/throw1.uc")
+#_(generate-html-file (io/resource "test/throw2.uc")
     {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
      :inline-css true
      :opt-true "Ja"
      :opt-false "Nein"
      :opt-catch "Behandlung der Ausnahmen"
      })
-
-#_(generate-html-file "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_Login-mit-BN-und-Nachname.uc"
-    {:inline-css true
-     :output "/home/jan/repos/phoenixreisen/nassi/t.html"})

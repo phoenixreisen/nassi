@@ -1,17 +1,10 @@
 (ns nassi.steps
   (:require 
     [nassi.stepper :as stepper]
+    [nassi.util :as u]
     [clojure.string :as str]
     [clojure.walk :as w]))
 
-(defn- node-type 
-  "A node is a vector whose first element is a keyword which corresponds with
-  some left hand side value from the grammar.
-
-  Returns said keyword, when `x` is a node."
-  [x] 
-  (when (vector? x) 
-    (first x)))
 
 (def ^:private node-id-regex  
   "Matches double exclamation marks followed by a valid HTML id at the start of
@@ -74,22 +67,21 @@
     (w/postwalk
       (fn [x] 
         (cond
-          (= :CASES x)                    (do (stepper/add-step! stp) x)
-          (= :CASES (node-type x))        (do (stepper/remove-step! stp) x)
-          (= :BLOCK x)                    (do (stepper/add-step! stp) x)
-          (= :BLOCK (node-type x))        (do (stepper/remove-step! stp) x)
-          (= :ELSE x)                     (do (stepper/inc-step! stp) x)
-          (= :SENTENCE (node-type x))     (process-sentence-node x 
-                                            (stepper/inc-step! stp))
-          (= :PARAGRAPH (node-type x))    (process-paragraph-node x 
-                                            (stepper/inc-step! stp))
-          (= :THROW (node-type x))        (let [error-code (second (second x))]
-                                            (stepper/pin-step! stp error-code)
-                                            x)
-          (= :ERRORCODEREF (node-type x)) (process-errorcoderef-node x stp) 
-          (= :HANDLE (node-type x))       (do (stepper/pop-step! stp) x)
-          :else x)
-        )
+          (= :CASES x)                      (do (stepper/add-step! stp) x)
+          (= :CASES (u/node-type x))        (do (stepper/remove-step! stp) x)
+          (= :BLOCK x)                      (do (stepper/add-step! stp) x)
+          (= :BLOCK (u/node-type x))        (do (stepper/remove-step! stp) x)
+          (= :ELSE x)                       (do (stepper/inc-step! stp) x)
+          (= :SENTENCE (u/node-type x))     (process-sentence-node x 
+                                              (stepper/inc-step! stp))
+          (= :PARAGRAPH (u/node-type x))    (process-paragraph-node x 
+                                              (stepper/inc-step! stp))
+          (= :THROW (u/node-type x))        (let [error-code (second (second x))]
+                                              (stepper/pin-step! stp error-code)
+                                              x)
+          (= :ERRORCODEREF (u/node-type x)) (process-errorcoderef-node x stp) 
+          (= :HANDLE (u/node-type x))       (do (stepper/pop-step! stp) x)
+          :else x))
       ast)))
 
 (defn id->step
@@ -101,8 +93,8 @@
   (let [res (atom {})]
     (w/postwalk
       (fn [x] 
-        (when (or (= :SENTENCE  (node-type x))   
-                  (= :PARAGRAPH (node-type x)))  
+        (when (or (= :SENTENCE  (u/node-type x))   
+                  (= :PARAGRAPH (u/node-type x)))  
           (let [[_ id step _] x]
             (when id
               (when-some [node (get @res id)]
