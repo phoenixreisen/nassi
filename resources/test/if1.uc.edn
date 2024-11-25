@@ -1,1 +1,1 @@
-[:DIAGRAM [:IF [:SENTENCE "Hunger? "] [:BLOCK [:TEXTSTMT [:SENTENCE "Essen"]]]]]
+[:DIAGRAM {:uid 6, :range {:start-line 1, :end-line 4}} [:IF {:uid 5, :range {:start-line 1, :end-line 3}} [:TEXT {:uid 1, :range {:start-line 1, :end-line 1}} "Hunger?"] [:BLOCK {:uid 4, :range {:start-line 1, :end-line 3}} [:TEXTSTMT {:uid 3, :range {:start-line 2, :end-line 2}} [:TEXT {:uid 2, :range {:start-line 2, :end-line 2}} "Essen"]]]]]

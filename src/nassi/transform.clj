@@ -1,3 +1,4 @@
+;; TODO rename NS to html
 (ns nassi.transform
   "In this NS contains the functionality to transform an AST into a
   HTML-Document."
@@ -5,105 +6,105 @@
     [nassi.parse :as p]
     [clojure.java.io :as io]
     [clojure.string :as str]
-    [clojure.walk :as w]
-    [editscript.core :as e]
     [hiccup.core :as h]
-    [hiccup2.core :as h2]
     [instaparse.core :as insta]
     [markdown.core :as md]
     [nassi.md-para :as md-para]
-    [nassi.util :as u]
     [nassi.steps :as steps]))
 
 (def ^:dynamic *gen-options* 
   {:true "yes"
    :false "no"
-   :catch "Exception-Handling"})
+   :catch "Exception-Handling"
+   :diff-change-bg "yellow"
+   :diff-insert-bg "lightgreen"
+   :diff-delete-bg "lightpink"})
+
+(defn- style [{:keys [diff-style]}]
+  (when-some [key (get {:style-diff-delete        :diff-delete-bg
+                        :style-diff-insert        :diff-insert-bg
+                        :style-diff-change-delete :diff-change-bg
+                        :style-diff-change        :diff-change-bg}
+                    diff-style)]
+    (cond-> (str "background-color: " (get *gen-options* key))
+      (#{:style-diff-delete :style-diff-change-delete} diff-style)
+      (str "; text-decoration:line-through"))))
 
 (def ^:private ^:const BLACK-RIGHT-POINTING-TRIANGLE "&#x25B6")
 
 (def ^:private ^:const BLACK-LEFT-POINTING-TRIANGLE "&#x25C0")  
 
-(defn- xf-diagram [& xs] [:div.diagram xs])
+(defn- xf-diagram [ctx & xs] [:div.diagram xs])
 
-(defn- xf-block [& xs] xs)
+(defn- xf-block [ctx & xs] xs)
 
-(defn- xf-sub [[step text] block] 
-  [:div.while ;; TODO FIXME when we have CSS class for sub
+(defn- xf-sub [ctx [step text] block] 
+  ;; TODO FIXME when we have CSS class for sub
+  [:div.while {:style (style ctx)}
    [:div.expression step
     [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-for [[step text] block] 
-  [:div.for 
+(defn- xf-for [ctx [step text] block] 
+  [:div.for {:style (style ctx)}
    [:div.expression step
     [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-while [[step text] block] 
-  [:div.while 
+(defn- xf-while [ctx [step text] block] 
+  [:div.while {:style (style ctx)}
    [:div.expression step
     [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-until [[step text] block] 
-  [:div.until 
+(defn- xf-until [ctx [step text] block] 
+  [:div.until {:style (style ctx)}
    [:div.expression step
     [:div.expression-text text]]
    [:div.statement block]])
 
-(defn- xf-switch [[step text] cases] 
-  [:div.branching
+(defn- xf-switch [ctx [step text] cases] 
+  [:div.branching {:style (style ctx)}
    [:div.expression step
     [:div.expression-text text]]
    [:div.branches
     cases]])
 
-(defn- xf-cases [ & cases] cases)
+(defn- xf-cases [ctx & xs] xs)
 
-(defn- xf-case [[step text] block] 
- [:div.branch 
+(defn- xf-case [ctx [step text] block] 
+ [:div.branch {:style (style ctx)}
   [:div.expression step
    [:div.expression-text text]]
   [:div.statement block]]) 
 
-(defn- xf-default [[step text] block] 
- [:div.default-branch 
+(defn- xf-default [ctx [step text] block] 
+ [:div.default-branch {:style (style ctx)}
   [:div.expression step
    [:div.expression-text text]]
   [:div.statement block]]) 
 
-(defn- xf-textstmt [[step text]]
+(defn- xf-textstmt [ctx [step text]]
   [:div.block step [:br] text])
 
-(defn- process-internal-links 
-  "Internal links have the form `[#id-of-something](#id-of-something)`. 
-  This FN replaces the link-text of each internal link with its corresponding
-  step number."
-  [id->step s]
-  (reduce (fn [ret [id step]]
-            (str/replace ret (str "[" id "]") (str "[" step "]"))) 
-    s id->step))
+(defn- xf-text [{:keys [id step] :as ctx} s] 
+  [[:div.step {:id id} step]
+   [:div {:style (style ctx)}
+    (md/md-to-html-string (md-para/trim-paragraph s))]])
 
-(defn- xf-text [id->step id st s] 
-  [[:div.step {:id (when id (subs id 2))} st] ; remove !! from start of id
-   (md/md-to-html-string 
-     (process-internal-links id->step 
-       (md-para/trim-paragraph s)))])
-
-(defn- xf-else [block]
-  [:div.default-branch 
+(defn- xf-else [ctx block]
+  [:div.default-branch {:style (style ctx)}
    [:div.expression 
     [:div.expression-text [:b (get *gen-options* :false)]]]
    [:div.statement block]])
 
 (defn- xf-if 
-  ([[step text] block] 
+  ([ctx [step text] block] 
    [:div.branching
     [:div.expression step
      [:div.expression-text text]]
     [:div.branches
-     [:div.branch 
+     [:div.branch {:style (style ctx)}
       [:div.expression 
        [:div.expression-text [:b (get *gen-options* :true)]]]
       [:div.statement block]]
@@ -111,68 +112,76 @@
       [:div.expression
        [:div.expression-text [:b (get *gen-options* :false)]]]
       [:div.statement]]]])
-  ([[step text] block else] 
+  ([ctx [step text] block else] 
    [:div.branching
     [:div.expression step
      [:div.expression-text text]]
     [:div.branches
-     [:div.branch 
+     [:div.branch {:style (style ctx)}
       [:div.expression 
        [:div.expression-text [:b (get *gen-options* :true)]]]
       [:div.statement block]]
      else]]))
 
-(defn- xf-throw [[_ error-code] [step text]] 
+(defn- xf-throw [ctx [_ _ error-code] [step text]] 
   [:div.block step 
    [:b BLACK-LEFT-POINTING-TRIANGLE " " (subs error-code 1)]
    text])
 
-(defn- xf-catch [handlers] 
+(defn- xf-catch [ctx handlers] 
   (list 
     [:div.empty]
-    [:div.branching.no-default-branch
+    [:div.branching.no-default-branch {:style (style ctx)}
      [:div.expression 
       [:div.expression-text [:b (get *gen-options* :catch)]]]
      [:div.branches
       handlers]]))
 
-(defn- xf-handlers [ & handlers] handlers)
+(defn- xf-handlers [ctx & xs] xs)
 
-(defn- xf-errorcoderef [error-code step]
+(defn- xf-errorcoderef [{:keys [step]} error-code]
   [:div [:div.step step]
    [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]])
 
-(defn- xf-handle [x block] 
- [:div.branch 
+(defn- xf-handle [ctx x block] 
+ [:div.branch {:style (style ctx)}
   [:div.expression 
    [:div.expression-text x]]
   [:div.statement block]]) 
 
-(defn to-html [x]
-  (let [ast (steps/add-steps
-              (p/parse-diagram x))
-        id->step (steps/id->step ast)]
-    (h/html 
-      (insta/transform 
-        {:DIAGRAM     xf-diagram
-         :TEXTSTMT    xf-textstmt
-         :PARAGRAPH   (partial xf-text id->step)
-         :SENTENCE    (partial xf-text id->step)
-         :BLOCK       xf-block
-         :SUB         xf-sub
-         :FOR         xf-for
-         :WHILE       xf-while
-         :UNTIL       xf-until
-         :SWITCH      xf-switch
-         :CASES       xf-cases
-         :CASE        xf-case
-         :DEFAULT     xf-default
-         :ELSE        xf-else
-         :IF          xf-if
-         :THROW       xf-throw
-         :CATCH       xf-catch
-         :HANDLERS    xf-handlers
-         :HANDLE      xf-handle
-         :ERRORCODEREF xf-errorcoderef
-         } 
-        ast))))
+(defn- html-with-inline-css [html-body]
+  (str/join \newline
+    ["<!DOCTYPE html>" "<html>" "<head>" "<style>" 
+     (slurp (io/resource "diagram.css"))
+     "</style>" "</head>" "<body>" html-body "</body>" "</html>"]))
+
+(defn- to-html-body 
+  "Transforms an `ast` (obtained by `nassi.parse/parse-diagram`) into a HTML
+  representation."
+  [ast]
+  (h/html 
+    (insta/transform 
+      {:DIAGRAM     xf-diagram
+       :TEXTSTMT    xf-textstmt
+       :TEXT        xf-text
+       :BLOCK       xf-block
+       :SUB         xf-sub
+       :FOR         xf-for
+       :WHILE       xf-while
+       :UNTIL       xf-until
+       :SWITCH      xf-switch
+       :CASES       xf-cases
+       :CASE        xf-case
+       :DEFAULT     xf-default
+       :ELSE        xf-else
+       :IF          xf-if
+       :THROW       xf-throw
+       :CATCH       xf-catch
+       :HANDLERS    xf-handlers
+       :HANDLE      xf-handle
+       :ERRORCODEREF xf-errorcoderef} 
+      (steps/add-steps ast))))
+
+(defn to-html [ast]
+  (-> (to-html-body ast)
+      (html-with-inline-css)))

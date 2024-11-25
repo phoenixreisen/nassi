@@ -8,11 +8,10 @@
                  [instaparse "1.5.0"] 
                  [hiccup "2.0.0-RC3"]
                  [markdown-clj "1.12.1"]
-                 [juji/editscript "0.6.3"]
                  [org.commonmark/commonmark "0.22.0"]
-                 ]
+                 [io.github.java-diff-utils/java-diff-utils "4.12"] ]
 
   :profiles {:uberjar {:aot :all}}
-  :repl-options {:init-ns nassi.parse}
+  :repl-options {:init-ns nassi.main}
   :uberjar-name "nassi.jar"
   :main nassi.main)

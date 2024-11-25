@@ -1,1 +1,1 @@
-[:DIAGRAM [:WHILE [:SENTENCE "Solange ich Durst habe "] [:BLOCK [:TEXTSTMT [:SENTENCE "Wasser trinken."]]]]]
+[:DIAGRAM {:uid 6, :range {:start-line 1, :end-line 4}} [:WHILE {:uid 5, :range {:start-line 1, :end-line 3}} [:TEXT {:uid 1, :range {:start-line 1, :end-line 1}} "Solange ich Durst habe"] [:BLOCK {:uid 4, :range {:start-line 1, :end-line 3}} [:TEXTSTMT {:uid 3, :range {:start-line 2, :end-line 2}} [:TEXT {:uid 2, :range {:start-line 2, :end-line 2}} "Wasser trinken."]]]]]

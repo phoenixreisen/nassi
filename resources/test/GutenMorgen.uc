@@ -30,11 +30,12 @@ SWITCH Wochentag pruefen {
 
     Duschen gehen
 
-    """Zahnpflege:
-    - Zahnseide verwenden
-    - Zaehne gruendlich putzen
-    - Zahnzwischenraumbuerstchen benutzen
-    - Mundspuelung"""
+    """
+    Zahnpflege:
+
+    - Zahnseide benutzen
+    - Zaehne putzen
+    """
   }
 }
 

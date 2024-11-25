@@ -16,6 +16,23 @@
   [pred coll]
   (some #(when (pred %) %) coll))
 
+(defn assoc-some
+  "Like `clojure.core/assoc`, but only for non-nil values.
+   
+   ```
+   (assoc-some {:a 1} :b nil :c false :d 3) => {:a 1, :c false, :d 3}
+   ```"
+  ([m k v] 
+   (if (some? v) (assoc m k v) m))
+  ([m k v & kvs]
+   (let [ret (assoc-some m k v)]
+     (if kvs
+       (if (next kvs)
+         (recur ret (first kvs) (second kvs) (nnext kvs))
+         (throw (IllegalArgumentException.
+                  "assoc-some expects even number of arguments after map/vector, found odd number")))
+       ret))))
+
 (defn node-type 
   "A node is a vector whose first element is a keyword which corresponds with
   some left hand side value from the grammar.
@@ -24,6 +41,11 @@
   [x] 
   (when (vector? x) 
     (first x)))
+
+(defn node? 
+  "Returns true, if `x` is a node."
+  [x]
+  (keyword? (node-type x)))
 
 (defn substr
   "Like `clojure.core/subs`, but also works with negative indexes (-1 is the
@@ -34,3 +56,15 @@
                            (if (neg? i) 
                              (+ (count s) i) i))]
      (subs s (normalize-index start) (normalize-index end)))))
+
+(def ^:private 
+  current-uid (atom 0))
+
+(defn reset-uid!
+  "We need this FN for test-cases.
+  Test-cases need to reset the UIDs, in order to be deterministic."
+  []
+  (reset! current-uid 0))
+
+(defn next-uid! []
+  (swap! current-uid inc))

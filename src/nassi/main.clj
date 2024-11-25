@@ -1,20 +1,28 @@
 (ns nassi.main
   (:require 
+    [nassi.diff :as diff]
     [clojure.java.io :as io]
     [clojure.string :as str]
     [clojure.tools.cli :as cli]
+    [nassi.parse :as p]
     [nassi.transform :as xf])
   (:gen-class))
 
 (def ^:private cli-options
   [["-o" "--output <file>" "Set output file name."]
+   ["-d" "--diff <file>" "File name of original file."]
+   [nil "--opt-bgcol-change COLOR" "HTML background-color(-code) for diff changes."
+    :default "yellow"] 
+   [nil "--opt-bgcol-insert COLOR" "HTML background-color(-code) for diff inserts."
+    :default "lightgreen"] 
+   [nil "--opt-bgcol-delete COLOR" "HTML background-color(-code) for diff deletes."
+    :default "lightpink"] 
    [nil "--opt-true LABEL" "Set label for true-branches in if-statements."
     :default "Yes"] 
    [nil "--opt-false LABEL" "Set label for false-branches in if-statements."
     :default "No"] 
    [nil "--opt-catch LABEL" "Set label for exception handling."
     :default "Exception-Handling"] 
-   [nil "--[no-]inline-css" "Include CSS in HTML." :default true]
    ["-h" "--help" "Show this help and exit."]])
 
 (defn- exit [status msg]
@@ -34,6 +42,7 @@
      "https://github.com/phoenixreisen/nassi"
      ""
      "Usage: nassi.jar [options] input-file"
+     "       nassi.jar [options] --diff original-file revised-file"
      "Options:" options-summary]
     (str/join \newline)))
 
@@ -58,29 +67,22 @@
       :else ; failed custom validation => exit with usage summary
       {:exit-message (usage summary)})))
 
-(defn- generate-html-with-inline-css [html]
-  (str/join \newline
-    ["<!DOCTYPE html>" "<html>" "<head>" "<style>" 
-     (slurp (io/resource "diagram.css"))
-     "</style>" "</head>" "<body>" html "</body>" "</html>"]))
-
-(defn- generate-html-with-extern-css [html]
-  (str/join \newline
-    ["<!DOCTYPE html>" "<html>" "<head>" 
-     "<link rel=\"stylesheet\" type=\"text/css\" href=\"diagram.css\">" 
-     "</head>" "<body>" html "</body>" "</html>"]))
-
-(defn- generate-html-file [input-file {:keys [inline-css output 
-                                              opt-true opt-false
-                                              opt-catch]}]
+(defn- generate-html-file [input-file {:keys [diff 
+                                              opt-bgcol-change
+                                              opt-bgcol-delete
+                                              opt-bgcol-insert
+                                              opt-catch opt-false
+                                              opt-true output]}]
   (with-bindings {#'nassi.transform/*gen-options* 
                   {:true opt-true
                    :false opt-false
-                   :catch opt-catch}}
-    (let [diagram (xf/to-html input-file)
-          html (if inline-css 
-                 (generate-html-with-inline-css diagram)
-                 (generate-html-with-extern-css diagram))]
+                   :catch opt-catch
+                   :diff-change-bg opt-bgcol-change
+                   :diff-insert-bg opt-bgcol-insert
+                   :diff-delete-bg opt-bgcol-delete}}
+    (let [html (if diff
+                 (diff/to-html diff input-file)
+                 (xf/to-html (p/parse-diagram input-file)))]
       (if output
         (spit output html)
         (println html)))))
@@ -91,10 +93,26 @@
       (exit (if ok? 0 1) exit-message)
       (generate-html-file input-file options))))
 
-#_(generate-html-file (io/resource "test/throw2.uc")
-    {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
-     :inline-css true
-     :opt-true "Ja"
-     :opt-false "Nein"
-     :opt-catch "Behandlung der Ausnahmen"
-     })
+#_(try 
+    (generate-html-file "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_AuthentifizierungEinerBuchung.nassi"      
+      {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
+       :inline-css true
+       :opt-true "Ja"
+       :opt-false "Nein"
+       :opt-catch "Behandlung der Ausnahmen"
+       })
+    (catch Exception x (.printStackTrace x)))
+
+#_(try 
+    (generate-html-file (io/resource "diff/change-throw-b.nassi")
+      {:diff (io/resource "diff/change-throw-a.nassi") ;; original
+       :opt-bgcol-change "yellow"
+       :opt-bgcol-insert "lightgreen"
+       :opt-bgcol-delete "lightpink"
+       :output "/home/jan/repos/phoenixreisen/nassi/t.html"
+       :inline-css true
+       :opt-true "Ja"
+       :opt-false "Nein"
+       :opt-catch "Behandlung der Ausnahmen"
+       })
+    (catch Exception x (.printStackTrace x)))

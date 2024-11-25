@@ -4,6 +4,7 @@
   (:require [clojure.test :refer :all]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [nassi.util :as u]
             [nassi.parse :refer :all]))
 
 (deftest embed-diagrams-test
@@ -29,6 +30,7 @@
   ([input]
    (approve input (str input ".edn")))
   ([input expected]
+   (u/reset-uid!)
    (let [a (parse-diagram (io/resource (str "test/" input)))
          b (with-open [r (io/reader (io/resource (str "test/" expected)))]
   (edn/read (java.io.PushbackReader. r)))]
@@ -36,17 +38,18 @@
 
 (deftest approval-test
   (testing "Could not approve:"
-    (approve "simple.uc" )
+    (approve "simple.uc")
     (approve "for1.uc" )
     (approve "for2.uc" )
     (approve "while1.uc" )
     (approve "until1.uc" )
     (approve "if1.uc" )
     (approve "if2.uc" )
+    (approve "switch1.uc")
     (approve "switch2.uc")
     (approve "throw1.uc")
     (approve "sub1.uc")
     (approve "sub2.uc")
     (approve "GutenMorgen.uc")))
 
-;(parse-diagram (io/resource (str "test/throw1.uc")))
+;(do (u/reset-uid!) (parse-diagram (io/resource (str "test/GutenMorgen.uc"))))
