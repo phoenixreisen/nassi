@@ -1,0 +1,11 @@
+The alarm clock is ringing!
+
+IF Today is a working day? {
+  Turn off alarm clock.
+  Stand up
+  Go to work.
+}
+ELSE {
+  Turn off alarm clock.
+  Continue sleeping
+}
