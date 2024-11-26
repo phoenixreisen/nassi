@@ -1,0 +1,59 @@
+""" ## User authentication
+
+A user wants to login into the application. For this to happen, he needs an
+security token, that will only be granted if he can successfully authenticate
+himself. """
+
+The user provides his "email address" and his "password".
+
+"""
+The system fetches the corresponding account based on the given "email
+address" and compares the password, that was stored for that particular
+account, with the given "password".
+
+<i>Keep in mind, that we only store password hashes - so we have to hash the
+given "password" first, before comparing it to the stored password hash!</i>
+"""
+
+THROW #unknown-email The system couldn't find an account for the given "email address".
+
+THROW #account-blocked """The account is currently blocked.
+
+<i>
+There are two possible reasons for that:
+  - The account is blocked temporarily (see step [!!block-account](#block-account)).
+  - The account is blocked permanently (because of something that happened outside of this Use Case).
+</i>
+"""
+
+THROW #wrong-password The system found the given "password" to be incorrect.
+
+The system deletes all failed login attempts, for the users' account.
+
+The system returns a security token. 
+
+CATCH 
+{
+  HANDLE #unknown-email {
+    !!error-wrong-username-password The system returns the error message “Login failed: wrong username / password.
+  }
+  HANDLE #account-blocked {
+    IF Is the account temporarily blocked? {
+      The system renews the current login lock (see step [!!block-account](#block-account)).
+    }
+
+    !!error-account-blocked The system returns the error message “Login failed: account currently blocked."
+  }
+  HANDLE #wrong-password {
+
+    The system notes a failed login attempt.
+
+    IF Was this the 3rd failed login attempt within the last 3 minutes? {
+      !!block-account The system blocks the account temporarily for 5 minutes 
+      continue with step [!!error-account-blocked](#error-account-blocked)
+    }
+    ELSE {
+      continue with step [!!error-wrong-username-password](#error-wrong-username-password)
+    }
+  }
+}

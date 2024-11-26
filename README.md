@@ -2,7 +2,7 @@
 
 *nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representation.
 
-Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications / Use Cases.
+Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications and Use Cases.
 
 
 ### Generating diagrams
@@ -69,6 +69,13 @@ And here is what the resulting diff looks like:
 
 ![Morning Routine Diff](./examples/diff_ex1_ex2.jpg "Morning Routine Diff")
 
+The original diagram is displayed on the left, the revised diagram is displayed on the right hand side:
+
+- steps that got deleted are marked red in the original diagram
+- newly added steps are marked green in the revised diagram
+- steps that got changed are marked yellow in both diagrams
+
+Small side note: if you don't like the default colors and want to use other colors instead, you can do so with the options `--opt-bgcol-delete`, `--opt-bgcol-insert` and `--opt-bgcol-change`. 
 
 ### Markdown
 
@@ -93,14 +100,14 @@ SUB ## User wants to save a file
 }
 ```
 
-Apart from the Nassi keyword SUB, which we are using here for the first time to group steps, we use quite a bit of markdown in the example:
+Apart from the *nassi* keyword _SUB_, which we are using here for the first time to group steps, we use quite a bit of markdown in the example:
 
 - we use `##` to define a H2 headline
-- a word was marked as bold, using `**`
+- a word was marked as bold, using `**` to enclose it
 - and there is a hyperlink to some external documentation
 
-But the most interesting thing is probably the link within the document (something that plain Markdown is not capable of on it's own).
-If a step starts with an anchor (i.e. two exclamation marks followed by a group of characters that form a valid HTML identifier), that step can be refferd to by other steps using the syntax `[!!my-id](#my-id)`.
+But the most interesting part is probably the link within the document (something that plain Markdown is not capable of on it's own).
+If a step starts with an anchor (i.e. two exclamation marks followed by a group of characters that form a valid HTML identifier), that step can be referred to by other steps using the syntax `[!!my-id](#my-id)`.
 
 Here's what the output looks like:
 
@@ -109,7 +116,81 @@ Here's what the output looks like:
 
 ### More sophisticated specifications
 
-Until now our example specifications were very simple. Each step was just a single sentence. But sometimes things aren't that simple and a step needs to be described in more detail. Whenever that need arises you can just enclose your text in tripple double-quotes making it a paragraph.
+Until now our example specifications were very simple. Each step was just a single sentence. But sometimes things aren't that simple and a step needs to be described in more detail. Whenever that need arises you can enclose that particular text in tripple double-quotes thus making it a paragraph.
+
+Ok, let's see that in action! Here is finally a somewhat realistic [example](/examples/ex4.nassi):
+
+```
+""" ## User authentication
+
+A user wants to login into the application. For this to happen, he needs an
+security token, that will only be granted if he can successfully authenticate
+himself. """
+
+The user provides his "email address" and his "password".
+
+"""
+The system fetches the corresponding account based on the given "email
+address" and compares the password, that was stored for that particular
+account, with the given "password".
+
+<i>Keep in mind, that we only store password hashes - so we have to hash the
+given "password" first, before comparing it to the stored password hash!</i>
+"""
+
+THROW #unknown-email The system couldn't find an account for the given "email address".
+
+THROW #account-blocked """The account is currently blocked.
+
+<i>
+There are two possible reasons for that:
+  - The account is blocked temporarily (see step [!!block-account](#block-account)).
+  - The account is blocked permanently (because of something that happened outside of this Use Case).
+</i>
+"""
+
+THROW #wrong-password The system found the given "password" to be incorrect.
+
+The system deletes all failed login attempts, for the users' account.
+
+The system returns a security token. 
+
+CATCH 
+{
+  HANDLE #unknown-email {
+    !!error-wrong-username-password The system returns the error message “Login failed: wrong username / password.
+  }
+  HANDLE #account-blocked {
+    IF Is the account temporarily blocked? {
+      The system renews the current login lock (see step [!!block-account](#block-account)).
+    }
+
+    !!error-account-blocked The system returns the error message “Login failed: account currently blocked."
+  }
+  HANDLE #wrong-password {
+
+    The system notes a failed login attempt.
+
+    IF Was this the 3rd failed login attempt within the last 3 minutes? {
+      !!block-account The system blocks the account temporarily for 5 minutes 
+      continue with step [!!error-account-blocked](#error-account-blocked)
+    }
+    ELSE {
+      continue with step [!!error-wrong-username-password](#error-wrong-username-password)
+    }
+  }
+}
+```
+
+What's new here? For starters we're using paragraphs (i.e.text blocks enclosed in `"""`). Aside from that we are using the exception handling mechanism (*nassi* keywords: _THROW_, _CATCH_ and _HANDLE_):
+
+- We can define exceptional situations with the  _THROW_ keyword followed by an error-code (a hash sign followed by a letter followed by letters, digits, dahes or underscores, e.g. `#wrong-password`) followed by a sentence or paragraph describing the situation.
+
+- Exception-handlers can only be defined within _CATCH_ blocks, with the _HANDLE_ keyword followed by an error-code (s. above) and a block of steps.
+ 
+Here is what the according diagram looks like:
+
+![User Authentication](./examples/ex4.jpg "User Authentication")
 
 
 ### Pro Tip
