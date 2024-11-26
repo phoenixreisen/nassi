@@ -1,5 +1,6 @@
-## User saves a file
+SUB ## User saves a file 
+{
+  User enters a file name and hits the **save** button.
 
-User enters a file name and hits the **save** button.
-
-The system checks, that all charaters of the file name are contained in the [POSIX portable file name character set](https://www.ibm.com/docs/en/zos/2.2.0?topic=locales-posix-portable-file-name-character-set).
+  The system checks, that all charaters of the file name are contained in the [POSIX portable file name character set](https://www.ibm.com/docs/en/zos/2.2.0?topic=locales-posix-portable-file-name-character-set).
+}
