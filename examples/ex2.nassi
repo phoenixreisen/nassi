@@ -6,10 +6,10 @@ IF Today is a working day? {
     Sleep a little further
   }
   Turn off alarm clock.
-  Stand up
+  Get up
   Haste to work.
 }
 ELSE {
   Turn off alarm clock.
-  Continue sleeping
+  Continue sleeping... 
 }

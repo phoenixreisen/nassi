@@ -13,12 +13,13 @@ The alarm clock is ringing!
 
 IF Today is a working day? {
   Turn off alarm clock.
-  Stand up
+  Slowly wake up.
+  Get up
   Go to work.
 }
 ELSE {
   Turn off alarm clock.
-  Continue sleeping
+  Continue sleeping...
 }
 ```
 
@@ -48,12 +49,12 @@ IF Today is a working day? {
     Sleep a little further
   }
   Turn off alarm clock.
-  Stand up
+  Get up
   Haste to work.
 }
 ELSE {
   Turn off alarm clock.
-  Continue sleeping
+  Continue sleeping... 
 }
 ```
 
