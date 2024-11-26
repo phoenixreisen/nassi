@@ -1,6 +1,14 @@
-SUB ## User saves a file 
+SUB ## User wants to save a file 
 {
-  User enters a file name and hits the **save** button.
+  !!user-enters-fname User enters a file name and hits the **save** button.
 
   The system checks, that all charaters of the file name are contained in the [POSIX portable file name character set](https://www.ibm.com/docs/en/zos/2.2.0?topic=locales-posix-portable-file-name-character-set).
+
+  IF Is filename ok? {
+    System saves the file
+  }
+  ELSE {
+    System tells user to enter a valid file name. 
+    continue at step [!!user-enters-fname](#user-enters-fname)
+  }
 }
