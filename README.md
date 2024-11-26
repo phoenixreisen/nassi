@@ -57,15 +57,27 @@ ELSE {
 }
 ```
 
-To highlight the changes between our original morning routine and the revised one, we can generate [this side-by-side diff](examples/diff-ex1-ex2.html) like so:
+To highlight the changes between our original morning routine and the revised one, we can generate a side-by-side diff like so:
 
 ```
 java -jar bin/nassi.jar -o diff.html --diff examples/ex1.nassi examples/ex2.nassi
 ```
 
-And here is the resulting diff:
+And here is what the resulting diff looks like:
 
 ![Morning Routine Diff](./examples/diff_ex1_ex2.jpg "Morning Routine Diff")
+
+
+### Pro Tip
+
+While working on a spezification it's very useful to have the textual representation and the resulting diagram in sync, so that whenever you save the textual represenation in your text editor, the diagram gets generated automatically. You can achieve this using the [entr](https://github.com/eradman/entr) command:
+
+
+```
+echo examples/ex1.nassi | entr -p java -jar bin/nassi.jar -o examples/ex1.html /_
+  
+```
+
 
 ## Usage
 
@@ -76,7 +88,10 @@ $ java -jar bin/nassi.jar
 ```
 
 
-## Build standalone JAR file
+## Build the executable
+
+If you want (for whatever reason) to build the executable (a stand-alone JAR file) yourself, you need to execute the following [Leiningen](https://leiningen.org/) commands:
+
 
 ```
 $ lein clean; lein uberjar
