@@ -1,6 +1,6 @@
 ## nassi
 
-*nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representation.
+*nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representations.
 
 Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications and Use Cases.
 
@@ -26,7 +26,7 @@ ELSE {
 
 BTW, if you're using Vim, you're lucky - there is a [Vim syntax file](extra/nassi.vim) for *nassi* source files.
 
-In order to generate the diagram, we call *nassi* as follows (assuming we're in *nassi*s' the project root dir):
+In order to generate the diagram, we call *nassi* as follows (assuming we're in *nassi*s' project root dir):
 
 ```
 java -jar bin/nassi.jar -o ex1.html examples/ex1.nassi
@@ -182,11 +182,11 @@ CATCH
 }
 ```
 
-What's new here? For starters we're using paragraphs (i.e.text blocks enclosed in `"""`). Aside from that we are using the exception handling mechanism (*nassi* keywords: _THROW_, _CATCH_ and _HANDLE_):
+What's new here? For starters we defined some paragraphs (i.e.text blocks enclosed in `"""`). Aside from that we are using the exception handling mechanism (*nassi* keywords: _THROW_, _CATCH_ and _HANDLE_):
 
 - We can define exceptional situations with the  _THROW_ keyword followed by an error-code (a hash sign followed by a letter followed by letters, digits, dahes or underscores, e.g. `#wrong-password`) followed by a sentence or paragraph describing the situation.
 
-- Exception-handlers can only be defined within _CATCH_ blocks, with the _HANDLE_ keyword followed by an error-code (s. above) and a block of steps.
+- Exception-handlers can be defined within _CATCH_ blocks, with the _HANDLE_ keyword followed by an error-code (s. above) and a block of steps.
  
 Here is what the according diagram looks like:
 
@@ -195,7 +195,7 @@ Here is what the according diagram looks like:
 
 ### Pro Tip
 
-While working on a spezification it's very useful to have the textual representation and the resulting diagram in sync, so that whenever you save the textual represenation in your text editor, the diagram gets generated automatically. You can achieve this using the [entr](https://github.com/eradman/entr) command:
+While working on a specification it's very useful to have the textual representation and the resulting diagram in sync, so that whenever you save the textual represenation in your text editor, the diagram gets generated automatically. You can achieve this using the [entr](https://github.com/eradman/entr) command:
 
 
 ```
