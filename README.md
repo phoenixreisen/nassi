@@ -2,9 +2,10 @@
 
 *nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representations.
 
-Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications.
+Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) use *nassi* extensively to create software specifications.
 
-### Hello world!
+
+### Hello, World!
 
 Let's start with the most basic [example](/examples/ex0.nassi) - a Gin and Tonic recipe:
  
@@ -13,6 +14,8 @@ Fill your glass with ice cubes.
 Add 6 ounces of Tonic water.
 Gently pur in 2 ounces of Gin.
 Press some lemon juice into the drink and add your garnish to the drink.
+
+Enjoy!
 ```
 
 In order to generate the diagram, call *nassi* as follows (assuming we're in *nassi*s' project root dir):
@@ -25,10 +28,33 @@ This is what the resulting diagram looks like:
 
 ![Gin and Tonic](./examples/ex1.jpg "Gin and Tonic")
 
+As you can see, each line of the input file gets transformed to a single step in the resulting diagram (and empty lines are ignored).
 
-### Generating diagrams
+Admittedly, strucure-wise our "Gin and Tonic" recipe is a bit boring. So read on, to learn how to create more interesting specifications.
 
-In terms of syntax, *nassi* has a lot to offer (see [Keywords](#keywords)), but let's start with a simple [example](/examples/ex1.nassi): 
+
+### Keywords
+
+In terms of syntax, *nassi* has a lot to offer. 
+Here are the keywords, that *nassi* understands:
+
+| Keyword | Example |
+| ------- | ------- |
+| IF      | `IF happy? { smile }` |
+| ELSE    | `IF happy? { smile } ELSE { cry }` |
+| SWITCH  | `SWITCH color { ... }` |
+| CASE    | `CASE yellow { bananas }` |
+| DEFAULT | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
+| FOR     | `FOR all candy { eat }` |
+| WHILE   | `WHILE candy left? { eat }` |
+| UNTIL   | `UNTIL bottle empty? { drink }` |
+| SUB     | `SUB yellow { bananas }`
+| THROW   | `THROW #wrong-password given password is incorrect` |
+| CATCH   | `CATCH { HANDLE ... }` |
+| HANDLE  | `HANDLE #wrong-password { note a failed login attempt }` |
+| INCLUDE | `INCLUDE "other-diagram.nassi"` |
+
+Let's do another simple [example](/examples/ex1.nassi) where we use an IF/ELSE statementds:
 
 ```
 The alarm clock is ringing!
@@ -46,12 +72,6 @@ ELSE {
 ```
 
 BTW, if you're using Vim, you're lucky - there is a [Vim syntax file](extra/nassi.vim) for *nassi* source files.
-
-In order to generate the diagram, we call *nassi* as follows (assuming we're in *nassi*s' project root dir):
-
-```
-java -jar bin/nassi.jar -o ex1.html examples/ex1.nassi
-```
 
 This is what the resulting diagram looks like:
 
@@ -212,26 +232,6 @@ What's new here? For starters we defined some paragraphs (i.e.text blocks enclos
 Here is what the according diagram looks like:
 
 ![User Authentication](./examples/ex4.jpg "User Authentication")
-
-### Keywords
-
-These are the keywords, that *nassi* understands.
-
-| Keyword | Example |
-| ------- | ------- |
-| IF      | `IF happy? { smile }` |
-| ELSE    | `IF happy? { smile } ELSE { cry }` |
-| SWITCH  | `SWITCH color { ... }` |
-| CASE    | `CASE yellow { bananas }` |
-| DEFAULT | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
-| FOR     | `FOR all candy { eat }` |
-| WHILE   | `WHILE candy left? { eat }` |
-| UNTIL   | `UNTIL bottle empty? { drink }` |
-| SUB     | `SUB yellow { bananas }`
-| THROW   | `THROW #wrong-password given password is incorrect` |
-| CATCH   | `CATCH { HANDLE ... }` |
-| HANDLE  | `HANDLE #wrong-password { note a failed login attempt }` |
-| INCLUDE | `INCLUDE "other-diagram.nassi"` |
 
 
 ### Pro Tip
