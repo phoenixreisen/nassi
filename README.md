@@ -28,7 +28,7 @@ This is what the resulting diagram looks like:
 
 ![Gin and Tonic](./examples/ex0.jpg "Gin and Tonic")
 
-As you can see, each line of the input file gets transformed to a single step in the resulting diagram (and empty lines are ignored).
+As you can see, each line of the input file gets transformed to a single step in the resulting diagram (where empty lines are ignored).
 
 Admittedly, strucure-wise our "Gin and Tonic" recipe is a bit boring. So read on, to learn how to create more interesting specifications.
 
@@ -148,7 +148,7 @@ Apart from the *nassi* keyword _SUB_, which we are using here for the first time
 - and there is a hyperlink to some external documentation
 
 But the most interesting part is probably the link within the document (something that plain Markdown is not capable of on it's own).
-If a step starts with an anchor (i.e. two exclamation marks followed by a group of characters that form a valid HTML identifier), that step can be referred to by other steps using the syntax `[!!my-id](#my-id)`.
+If a step starts with an anchor (e.g. `!!my-id`), that step can be referred to by other steps using the syntax `[!!my-id](#my-id)`. Anchors start with two exclamation marks followed by a group of characters that form a valid HTML identifier.
 
 Here's what the output looks like:
 
@@ -232,6 +232,36 @@ What's new here? For starters we defined some paragraphs (i.e.text blocks enclos
 Here is what the according diagram looks like:
 
 ![User Authentication](./examples/ex4.jpg "User Authentication")
+
+
+### Metadata
+
+Oftentimes it is desirable, to include informations _about_ the spezification, like:
+
+- author
+- date
+- version
+- ...
+
+*nassi* allows us to define such simple metadata in form of key/value pairs right at the beginning of a specification. Each such definition starts with a semicolon and the keys must start with a letter, optionally followed by letters, digits, dahes or underscores. Key and value are seperated by an equals sign. Here is an [example](/examples/ex5.nassi):
+
+```
+; Author  = Jan Hermanns
+; Date    = 2024-11-27
+; Version = 1.0
+
+IF happy? { simle! } ELSE { cry! }
+```
+
+By default all metadata key/value pairs are displayed in the order they appear as a table above the diagram. If you don't like that, you can define where, which and if metadata should be displayed at all, with the  options `--metadata-pos`, ` -k, --metadata-key KEY` and `--[no-]show-metadata`. Let's assume we just want to show "Date" and "Author" (in that order): 
+
+```
+java -jar bin/nassi.jar -o ex5.html -k Date -k Author examples/ex5.nassi
+```
+
+Here is what the result looks like:
+
+![Metadata](./examples/ex5.jpg "Metadata")
 
 
 ### Pro Tip
