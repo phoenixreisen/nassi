@@ -2,7 +2,7 @@
 
 *nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representations.
 
-Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) use *nassi* extensively to create software specifications.
+Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we use *nassi* extensively to create software specifications.
 
 
 ### Hello, World!
@@ -18,7 +18,7 @@ Press some lemon juice into the drink and add your garnish to the drink.
 Enjoy!
 ```
 
-In order to generate the diagram, call *nassi* as follows (assuming we're in *nassi*s' project root dir):
+In order to generate the diagram, call *nassi* as follows (assuming you're in *nassi*s' project root dir):
 
 ```
 java -jar bin/nassi.jar -o ex0.html examples/ex0.nassi
@@ -30,7 +30,7 @@ This is what the resulting diagram looks like:
 
 As you can see, each line of the input file gets transformed to a single step in the resulting diagram (where empty lines are ignored).
 
-Admittedly, strucure-wise our "Gin and Tonic" recipe is a bit boring. So read on, to learn how to create more interesting specifications.
+Admittedly, structure-wise our "Gin and Tonic" recipe is a bit boring. So read on, to learn how to create more interesting specifications.
 
 
 ### Keywords
