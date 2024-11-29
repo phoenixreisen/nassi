@@ -1,0 +1,19 @@
+; Version = 1.0
+; Author  = Jan Hermanns
+; Date    = 2024-11-27
+
+The alarm clock is ringing!
+
+IF Today is a working day? {
+  WHILE As long as I still have 5 minutes left {
+    Hit the snooze button
+    Sleep a little further
+  }
+  Turn off alarm clock.
+  Get up
+  Haste to work.
+}
+ELSE {
+  Turn off alarm clock.
+  Continue sleeping... 
+}

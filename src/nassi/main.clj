@@ -1,25 +1,43 @@
 (ns nassi.main
   (:require 
     [nassi.diff :as diff]
+    [instaparse.failure :as failure]
     [clojure.java.io :as io]
     [clojure.string :as str]
     [clojure.tools.cli :as cli]
     [nassi.parse :as p]
-    [nassi.transform :as xf])
+    [nassi.html :as html])
   (:gen-class))
+
+(def ^:private spaces "                                                    ")
 
 (def ^:private cli-options
   [["-o" "--output <file>" "Set output file name."]
    ["-d" "--diff <file>" "File name of original file."]
-   [nil "--opt-bgcol-change COLOR" "HTML background-color(-code) for diff changes."
+   [nil "--[no-]show-metadata" "Render metadata?" :default true]
+   [nil "--metadata-pos POS" (str "Show the metadata table\n"
+                               spaces "above (top) or below (bottom)\n" spaces
+                               "the diagram?")
+    :default "top"
+    :validate [#{"top" "bottom"} "Must be either 'top' or 'bottom'."]]
+   ["-k" "--metadata-key KEY" (str "Metadata keys of interest.\n" spaces 
+                                "When not specified, all\n" spaces 
+                                "key/value pairs are rendered.")
+    :multi true
+    :default []
+    :update-fn conj]
+   [nil "--opt-bgcol-change COLOR" (str "HTML background-color(-code)\n" spaces 
+                                     "for diff changes.")
     :default "yellow"] 
-   [nil "--opt-bgcol-insert COLOR" "HTML background-color(-code) for diff inserts."
+   [nil "--opt-bgcol-insert COLOR" (str "HTML background-color(-code)\n" spaces 
+                                     "for diff inserts")
     :default "lightgreen"] 
-   [nil "--opt-bgcol-delete COLOR" "HTML background-color(-code) for diff deletes."
+   [nil "--opt-bgcol-delete COLOR" (str "HTML background-color(-code)\n" spaces 
+                                     "for diff deletes")
     :default "lightpink"] 
-   [nil "--opt-true LABEL" "Set label for true-branches in if-statements."
+   [nil "--opt-true LABEL" (str "Set label for true-branches\n" spaces "in if-statements.")
     :default "Yes"] 
-   [nil "--opt-false LABEL" "Set label for false-branches in if-statements."
+   [nil "--opt-false LABEL"(str "Set label for false-branches\n" spaces "in if-statements.")
     :default "No"] 
    [nil "--opt-catch LABEL" "Set label for exception handling."
     :default "Exception-Handling"] 
@@ -67,22 +85,24 @@
       :else ; failed custom validation => exit with usage summary
       {:exit-message (usage summary)})))
 
-(defn- generate-html-file [input-file {:keys [diff 
-                                              opt-bgcol-change
-                                              opt-bgcol-delete
-                                              opt-bgcol-insert
-                                              opt-catch opt-false
-                                              opt-true output]}]
-  (with-bindings {#'nassi.transform/*gen-options* 
-                  {:true opt-true
-                   :false opt-false
-                   :catch opt-catch
-                   :diff-change-bg opt-bgcol-change
-                   :diff-insert-bg opt-bgcol-insert
-                   :diff-delete-bg opt-bgcol-delete}}
-    (let [html (if diff
+(defn- generate-html-file [input-file {:keys [diff opt-bgcol-change
+                                              opt-bgcol-delete opt-bgcol-insert
+                                              opt-catch opt-false opt-true
+                                              output show-metadata metadata-pos
+                                              metadata-key]}]
+  (with-bindings {#'nassi.html/*gen-options* 
+                  {:true            opt-true
+                   :false           opt-false
+                   :catch           opt-catch
+                   :diff-change-bg  opt-bgcol-change
+                   :diff-insert-bg  opt-bgcol-insert
+                   :diff-delete-bg  opt-bgcol-delete}}
+    (let [opts {:show-metadata    show-metadata
+                :metadata-at-top  (= metadata-pos "top")
+                :metadata-keyseq  metadata-key}
+          html (if diff
                  (diff/to-html diff input-file)
-                 (xf/to-html (p/parse-diagram input-file)))]
+                 (html/to-html (p/parse-diagram input-file) opts))]
       (if output
         (spit output html)
         (println html)))))
@@ -91,10 +111,17 @@
   (let [{:keys [input-file options exit-message ok?]} (validate-args args)]
     (if exit-message
       (exit (if ok? 0 1) exit-message)
-      (generate-html-file input-file options))))
+      (try 
+        (generate-html-file input-file options)
+        (catch Exception e 
+          (if-some [{:keys [failure]} (ex-data e)]
+            (failure/pprint-failure failure)
+            ; This should never happen
+            ; TODO We should ask the user to send us a bug report!
+            (.printStackTrace e)))))))
 
 #_(try 
-    (generate-html-file "/home/jan/repos/phoenixreisen/phxauth/doc/UC-001_AuthentifizierungEinerBuchung.nassi"      
+    (generate-html-file "resources/test/include1.uc"      
       {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
        :inline-css true
        :opt-true "Ja"
@@ -104,8 +131,8 @@
     (catch Exception x (.printStackTrace x)))
 
 #_(try 
-    (generate-html-file (io/resource "diff/change-throw-b.nassi")
-      {:diff (io/resource "diff/change-throw-a.nassi") ;; original
+    (generate-html-file "examples/ex2b.nassi"
+      {:diff "examples/ex1.nassi" ;; original
        :opt-bgcol-change "yellow"
        :opt-bgcol-insert "lightgreen"
        :opt-bgcol-delete "lightpink"
@@ -116,3 +143,6 @@
        :opt-catch "Behandlung der Ausnahmen"
        })
     (catch Exception x (.printStackTrace x)))
+
+;;TODO define CLI option for metadata
+;;TODO describe metadata feature in README

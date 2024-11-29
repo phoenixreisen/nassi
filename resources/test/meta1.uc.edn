@@ -1,0 +1,1 @@
+[:DIAGRAM {:uid 6, :range {:start-line 1, :end-line 5}, :meta {"Author" "Jan Hermanns", "Date" "2024-11-27"}} [:TEXTSTMT {:uid 5, :range {:start-line 4, :end-line 4}} [:TEXT {:uid 4, :range {:start-line 4, :end-line 4}} "Hello, World!"]]]

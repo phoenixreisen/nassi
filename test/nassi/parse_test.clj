@@ -8,10 +8,12 @@
             [nassi.parse :refer :all]))
 
 (deftest embed-diagrams-test
-  (testing "FN embed-diagrams"
-    (let [f #'nassi.parse/embed-diagrams]
-      (is (= (f [:DIAGRAM 1 2 3 [:DIAGRAM 4 5] [6 7 [8 9 [:DIAGRAM 10]]] 11 12])
-             [:DIAGRAM 1 2 3 4 5 [6 7 [8 9 10]] 11 12])))))
+  (testing "FN embed-diagrams: ensure only root ctx is retained"
+    (let [ctx {:hello "world"}
+          f #'nassi.parse/embed-diagrams]
+      (is (= (f [:DIAGRAM ctx 1 2 3 [:DIAGRAM ctx 4 5] 
+                 [6 7 [8 9 [:DIAGRAM ctx 10]]] 11 12])
+             [:DIAGRAM ctx 1 2 3 4 5 [6 7 [8 9 10]] 11 12])))))
 
 (defn- approve 
   "Parst die textuelle Diagramm Repraesentation und prueft, ob das Ergebnis die
@@ -50,6 +52,8 @@
     (approve "throw1.uc")
     (approve "sub1.uc")
     (approve "sub2.uc")
+    (approve "meta1.uc")
+    (approve "include1.uc")
     (approve "GutenMorgen.uc")))
 
-;(do (u/reset-uid!) (parse-diagram (io/resource (str "test/GutenMorgen.uc"))))
+;(do (u/reset-uid!) (parse-diagram (io/resource (str "test/meta1.uc"))))

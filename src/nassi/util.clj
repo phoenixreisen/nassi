@@ -68,3 +68,14 @@
 
 (defn next-uid! []
   (swap! current-uid inc))
+
+(defn third 
+  "Returns the third item in the collection. Same as `(first (nnext coll))`.
+
+   ```
+   (third [1 2 3 4 5]) => 3
+   (third [1 2]) => nil 
+   (third nil) => nil
+   ```"
+  [coll]
+  (first (nnext coll)))

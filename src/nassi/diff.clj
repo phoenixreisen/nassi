@@ -14,7 +14,7 @@
     [clojure.walk :as w]
     [nassi.parse :as p]
     [nassi.steps :as steps]
-    [nassi.transform :as xf]
+    [nassi.html :as html]
     [nassi.util :as u]))
 
 (defn- create-temp-file []
@@ -144,7 +144,7 @@
     "<iframe frameborder=\"0\" scrolling=\"yes\" height=\"100%\" width=\"49%\" 
       align=\"left\" style=\"height: 100%; width: 49%; float: left;\" srcdoc=\"" 
     (str/replace
-      (str/replace (xf/to-html ast) 
+      (str/replace (html/to-html ast) 
         "\"" "&quot;")
       "\n" " ")
     "\"></iframe>"))
@@ -155,7 +155,7 @@
       align=\"right\" style=\"overflow: hidden; height: 100%; width: 49%;\" 
       srcdoc=\"" 
     (str/replace
-      (str/replace (xf/to-html ast) 
+      (str/replace (html/to-html ast) 
       "\"" "&quot;")
       "\n" " ")
     "\"></iframe>"))

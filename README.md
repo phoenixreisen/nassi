@@ -2,7 +2,28 @@
 
 *nassi* is a tool, that allows you to generate Nassi-Shneiderman-like diagrams from textual representations.
 
-Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications and Use Cases.
+Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nassi* to create software specifications.
+
+### Hello world!
+
+Let's start with the most basic [example](/examples/ex0.nassi) - a Gin and Tonic recipe:
+ 
+```
+Fill your glass with ice cubes.
+Add 6 ounces of Tonic water.
+Gently pur in 2 ounces of Gin.
+Press some lemon juice into the drink and add your garnish to the drink.
+```
+
+In order to generate the diagram, call *nassi* as follows (assuming we're in *nassi*s' project root dir):
+
+```
+java -jar bin/nassi.jar -o ex0.html examples/ex0.nassi
+```
+
+This is what the resulting diagram looks like:
+
+![Gin and Tonic](./examples/ex1.jpg "Gin and Tonic")
 
 
 ### Generating diagrams

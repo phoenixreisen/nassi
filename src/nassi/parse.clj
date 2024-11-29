@@ -37,16 +37,18 @@
 (declare embed-diagrams)
 
 (defn- embed-diagrams 
-  "Embeds DIAGRAM nodes like so:
+  "Embeds DIAGRAM nodes like so (note that only the root context is retained):
 
   ```
-  (embed-diagrams [:DIAGRAM 1 2 3 [:DIAGRAM 4 5] [6 7 [8 9 [:DIAGRAM 10]]] 11 12])
-  => [:DIAGRAM 1 2 3 4 5 [6 7 [8 9 10]] 11 12]
+  (embed-diagrams [:DIAGRAM ctx-1 1 2 3 [:DIAGRAM ctx-2 4 5] 
+                    [6 7 [8 9 [:DIAGRAM ctx-3 10]]] 11 12])
+  => [:DIAGRAM ctx-1 1 2 3 4 5 [6 7 [8 9 10]] 11 12]
   ```"
   [xs] 
   (reduce (fn [ret x] 
             (cond 
-              (= :DIAGRAM (u/node-type x)) (u/concatv ret (rest x))
+              (= :DIAGRAM (u/node-type x)) (let [[tag ctx & tail] x]
+                                             (u/concatv ret tail))
               (vector? x) (conj ret (embed-diagrams x))
               :else (conj ret x)))
     [] xs))
@@ -108,18 +110,44 @@
         :else x))
     ast))
 
+(defn- metadata 
+  "If `ast` contains a METADATA node, returns it's METAINFO key/value pairs as
+  a map."
+  [ast]
+  (when-some [metadata (u/third ast)]
+    (when (= :METADATA (u/node-type metadata))
+      (let [[_ _ & metainfos] metadata]
+        (into {} (for [[_ _ k v] metainfos]
+                   [k v]))))))
+
+(defn- move-metadata-to-diagram-ctx
+  "Removes the METADATA node from the `ast` and puts the METAINFO key/value
+  pairs in the context map of the DIAGRAM node."
+  [ast]
+  (if-some [m (metadata ast)]
+    (w/postwalk
+      (fn [x] 
+        (if (= :DIAGRAM (u/node-type x)) 
+          (let [[tag ctx _ & tail] x]
+            (apply vector tag (assoc ctx :meta m) tail))
+          x))
+      ast)
+    ast))
+
 (defn parse-diagram [x]
-  (let [text (slurp x)]
-    (->> (parse text)
+  (let [text (slurp x)
+        ast (parse text)]
+    (when (instance? instaparse.gll.Failure ast)
+      (throw (ex-info "Parse error" {:failure ast})))
+    (->> ast
          (insta/add-line-and-column-info-to-metadata text)
          (add-node-contexts)
          (normalize-text-nodes)
+         (move-metadata-to-diagram-ctx)
          (preprocess-diagram (.getParentFile (io/file x))))))
 
-;(parse-diagram (io/resource "include/top.nassi"))
-;(parse (slurp "/home/jan/tmp/pp.nassi" ))
-;(parse-diagram (io/resource "diff/change-throw-a.nassi"))
-
+#_(let [[_ {:keys [meta]} :as ast] (parse-diagram (io/resource "test/include1.uc"))] 
+    meta)
 ;(clojure.pprint/pp)
 
 ; -------------------------------------------------------------

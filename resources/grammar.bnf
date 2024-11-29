@@ -1,4 +1,10 @@
-DIAGRAM     = STATEMENT [_ STATEMENT]*
+DIAGRAM     = [METADATA] STATEMENT [_ STATEMENT]*
+
+<_>         = <#"[\s]*">    (* optional whitespace *)
+<__>        = <#"[\h]*">    (* optional horizontal whitespace *)
+
+METADATA    = [METAINFO]*
+METAINFO    = <';'> __ #"[A-Za-z][\.A-Za-z0-9_-]+" __ <'='> __ #".*" __ <'\n'>
 
 <STATEMENT> = _ (INCLUDE | FOR | WHILE | UNTIL | SUB | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
 
@@ -24,7 +30,6 @@ CASE        = <'case'>    _  TEXT _  BLOCK
 DEFAULT     = <'default'> _ [TEXT _] BLOCK
 
 BLOCK       = <'{'> [_ STATEMENT]+ _ <'}'>
-<_>         = <#"[\s]*">
 ERRORCODE   = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
 ERRORCODEREF = ERRORCODE
 TEXTSTMT    = TEXT
