@@ -157,7 +157,25 @@ Here's what the output looks like:
 
 ### More sophisticated specifications
 
-Until now our example specifications were very simple. Each step was just a single sentence. But sometimes things aren't that simple and a step needs to be described in more detail. Whenever that need arises you can enclose that particular text in tripple double-quotes thus making it a paragraph.
+Until now our example specifications were very simple. Each step was just a single sentence. But sometimes things aren't that simple and a step needs to be described in more detail. Whenever that need arises you can enclose that particular text in tripple double-quotes thus making it a paragraph. 
+
+To be clear, paragraphs can be used everywhere where "normal" text is used. Therefore the following two specifications would yield the same diagram:
+
+```
+IF Are you happy? { 
+  smile! 
+}
+```
+
+```
+IF """
+   Are 
+   you 
+   happy?"""
+{ 
+  """smile!"""
+}
+```
 
 Ok, let's see that in action! Here is finally a somewhat realistic [example](/examples/ex4.nassi):
 
@@ -241,9 +259,8 @@ Oftentimes it is desirable, to include informations _about_ the spezification, l
 - author
 - date
 - version
-- ...
 
-*nassi* allows us to define such simple metadata in form of key/value pairs right at the beginning of a specification. Each such definition starts with a semicolon and the keys must start with a letter, optionally followed by letters, digits, dahes or underscores. Key and value are seperated by an equals sign. Here is an [example](/examples/ex5.nassi):
+*nassi* allows us to define such simple metadata in form of key/value pairs right at the beginning of a specification. Each such definition starts with a semicolon and the keys must start with a letter, optionally followed by letters, digits, dahes or underscores. Keys and values are seperated by an equals sign. Here is an [example](/examples/ex5.nassi):
 
 ```
 ; Author  = Jan Hermanns
@@ -253,7 +270,7 @@ Oftentimes it is desirable, to include informations _about_ the spezification, l
 IF happy? { simle! } ELSE { cry! }
 ```
 
-By default all metadata key/value pairs are displayed in the order they appear as a table above the diagram. If you don't like that, you can define where, which and if metadata should be displayed at all, with the  options `--metadata-pos`, ` -k, --metadata-key KEY` and `--[no-]show-metadata`. Let's assume we just want to show "Date" and "Author" (in that order): 
+By default all metadata key/value pairs are displayed in the order they appear as a table above the diagram - but you can customize _where_, _which_ and _if_ metadata should be displayed at all, with the  options `--metadata-pos`, ` -k, --metadata-key KEY` and `--[no-]show-metadata`. Let's assume we just want to show "Date" and "Author" (in that order): 
 
 ```
 java -jar bin/nassi.jar -o ex5.html -k Date -k Author examples/ex5.nassi
