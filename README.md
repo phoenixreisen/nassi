@@ -23,7 +23,7 @@ java -jar bin/nassi.jar -o ex0.html examples/ex0.nassi
 
 This is what the resulting diagram looks like:
 
-![Gin and Tonic](./examples/ex1.jpg "Gin and Tonic")
+![Gin and Tonic](./examples/ex0.jpg "Gin and Tonic")
 
 
 ### Generating diagrams
