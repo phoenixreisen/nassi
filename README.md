@@ -7,7 +7,7 @@ Here at [Phoenix Reisen GmbH](https://www.phoenixreisen.com/) we mainly use *nas
 
 ### Generating diagrams
 
-Let's start with a simple [example](/examples/ex1.nassi): 
+In terms of syntax, *nassi* has a lot to offer (see [Keywords](#keywords)), but let's start with a simple [example](/examples/ex1.nassi): 
 
 ```
 The alarm clock is ringing!
@@ -191,6 +191,26 @@ What's new here? For starters we defined some paragraphs (i.e.text blocks enclos
 Here is what the according diagram looks like:
 
 ![User Authentication](./examples/ex4.jpg "User Authentication")
+
+### Keywords
+
+These are the keywords, that *nassi* understands.
+
+| Keyword | Example |
+| ------- | ------- |
+| IF      | `IF happy? { smile }` |
+| ELSE    | `IF happy? { smile } ELSE { cry }` |
+| SWITCH  | `SWITCH color { ... }` |
+| CASE    | `CASE yellow { bananas }` |
+| DEFAULT | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
+| FOR     | `FOR all candy { eat }` |
+| WHILE   | `WHILE candy left? { eat }` |
+| UNTIL   | `UNTIL bottle empty? { drink }` |
+| SUB     | `SUB yellow { bananas }`
+| THROW   | `THROW #wrong-password given password is incorrect` |
+| CATCH   | `CATCH { HANDLE ... }` |
+| HANDLE  | `HANDLE #wrong-password { note a failed login attempt }` |
+| INCLUDE | `INCLUDE "other-diagram.nassi"` |
 
 
 ### Pro Tip
