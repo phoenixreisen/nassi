@@ -26,7 +26,7 @@ java -jar bin/nassi.jar -o ex0.html examples/ex0.nassi
 
 This is what the resulting diagram looks like:
 
-![Gin and Tonic](./examples/ex1.jpg "Gin and Tonic")
+![Gin and Tonic](./examples/ex0.jpg "Gin and Tonic")
 
 As you can see, each line of the input file gets transformed to a single step in the resulting diagram (and empty lines are ignored).
 
