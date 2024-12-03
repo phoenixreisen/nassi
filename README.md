@@ -54,7 +54,7 @@ Here are the keywords, that *nassi* understands:
 | HANDLE  | `HANDLE #wrong-password { note a failed login attempt }` |
 | INCLUDE | `INCLUDE "other-diagram.nassi"` |
 
-Let's do another simple [example](/examples/ex1.nassi) where we use an IF/ELSE statementds:
+Let's do another simple [example](/examples/ex1.nassi) - this time we use an IF/ELSE statement:
 
 ```
 The alarm clock is ringing!
@@ -141,7 +141,7 @@ SUB ## User wants to save a file
 }
 ```
 
-Apart from the *nassi* keyword _SUB_, which we are using here for the first time to group steps, we use quite a bit of markdown in the example:
+Apart from the *nassi* keyword SUB, which we are using here for the first time to group steps, we use quite a bit of markdown in the example:
 
 - we use `##` to define a H2 headline
 - a word was marked as bold, using `**` to enclose it
@@ -241,11 +241,11 @@ CATCH
 }
 ```
 
-What's new here? For starters we defined some paragraphs (i.e.text blocks enclosed in `"""`). Aside from that we are using the exception handling mechanism (*nassi* keywords: _THROW_, _CATCH_ and _HANDLE_):
+What's new here? For starters we defined some paragraphs (i.e.text blocks enclosed in `"""`). Aside from that we are using the exception handling mechanism (*nassi* keywords: THROW, CATCH and HANDLE):
 
-- We can define exceptional situations with the  _THROW_ keyword followed by an error-code (a hash sign followed by a letter followed by letters, digits, dahes or underscores, e.g. `#wrong-password`) followed by a sentence or paragraph describing the situation.
+- We can define exceptional situations with the  THROW keyword followed by an error-code (a hash sign followed by a letter followed by letters, digits, dahes or underscores, e.g. `#wrong-password`) followed by a sentence or paragraph describing the situation.
 
-- Exception-handlers can be defined within _CATCH_ blocks, with the _HANDLE_ keyword followed by an error-code (s. above) and a block of steps.
+- Exception-handlers can be defined within CATCH blocks, with the HANDLE keyword followed by an error-code (s. above) and a block of steps.
  
 Here is what the according diagram looks like:
 
@@ -270,7 +270,7 @@ Oftentimes it is desirable, to include informations _about_ the spezification, l
 IF happy? { simle! } ELSE { cry! }
 ```
 
-By default all metadata key/value pairs are displayed in the order they appear as a table above the diagram - but you can customize _where_, _which_ and _if_ metadata should be displayed at all, with the  options `--metadata-pos`, ` -k, --metadata-key KEY` and `--[no-]show-metadata`. Let's assume we just want to show "Date" and "Author" (in that order): 
+By default all metadata key/value pairs are displayed in the order they appear as a table above the diagram - but you can customize _where_, _which_ and _if_ metadata should be displayed at all, with the  options `--metadata-pos`, ` -k, --metadata-key` and `--[no-]show-metadata`. Let's assume we just want to show "Date" and "Author" (in that order): 
 
 ```
 java -jar bin/nassi.jar -o ex5.html -k Date -k Author examples/ex5.nassi

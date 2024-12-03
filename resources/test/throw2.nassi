@@ -1,0 +1,9 @@
+THROW #first-error first error
+THROW #second-error second error
+THROW #third-error third error
+
+CATCH {
+  HANDLE #first-error { don't worry } 
+  HANDLE #second-error { don't worry } 
+  HANDLE #fourth-error { don't worry } 
+}

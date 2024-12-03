@@ -149,7 +149,3 @@
 #_(let [[_ {:keys [meta]} :as ast] (parse-diagram (io/resource "test/include1.uc"))] 
     meta)
 ;(clojure.pprint/pp)
-
-; -------------------------------------------------------------
-
-;; - Warnen, wenn eine Exception nicht behandelt wird.

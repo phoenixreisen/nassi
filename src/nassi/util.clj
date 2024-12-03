@@ -16,6 +16,20 @@
   [pred coll]
   (some #(when (pred %) %) coll))
 
+(defn conj-some
+  "Like `clojure.core/conj`, but only for non-nil values.
+   
+   ```
+   (conj-some [] 1 nil 3 nil 5) => [1 3 5]
+   ```"
+  ([] [])
+  ([coll] coll)
+  ([coll x] (if x (conj coll x) coll))
+  ([coll x & xs]
+   (if xs
+     (recur (conj-some coll x) (first xs) (next xs))
+     (conj-some coll x))))
+
 (defn assoc-some
   "Like `clojure.core/assoc`, but only for non-nil values.
    
@@ -79,3 +93,54 @@
    ```"
   [coll]
   (first (nnext coll)))
+
+(defn repeat-str 
+  "Like `clojure.core/repeat`, but for strings.
+   
+   ```
+   (repeat-str 2 \"ab\") => \"abab\"
+   ```
+   "
+  [n s]
+  (apply str (repeat n s)))
+
+(defn split-words
+  "Splittet die Seq `words` in ein Tuppel auf, so dass der erste Teil einen
+  String mit den Woertern enthaelt, deren Gesamtlaenge (zzgl. einem Space
+  zwischen jedem Wort) nicht das `limit` ueberschreiten. Der zweite Teil
+  enthaelt die uebrig gebliebenen Worte."
+  [words limit & {:keys [trim?] 
+                  :or {trim? true}}]
+  (loop [len 0, front [], back words]
+    (cond
+      (= len (inc limit)) [(cond-> (str/join " " front) trim? str/trim) back]
+      (> len (inc limit)) [(cond-> (str/join " " (butlast front)) trim? str/trim) 
+                           (cons (last front) back)]
+      :else (if-some [w (first back)]
+              (recur (inc (+ len (.length w))) (conj front w) (next back))
+              [(str/join " " front) back]))))
+
+(defn word-wrap 
+  "Liefert einen String zurueck, dessen Zeilen maximal `limit` Zeichen lang
+  sind. Das gilt allerdings nur, sofern der uebergebene String `s` keine
+  Woerter enthaelt die laenger als das `limit` sind. Wenn ein `margin`
+  angegeben wurde, werden am linken Rand entsprechend viele Leerzeichen
+  eingefuegt."
+
+  ([s limit] (word-wrap s limit 0))
+  ([s limit margin]
+   (assert (> limit margin))
+   (let [padding (repeat-str margin " ")
+         line (str/replace s #"\n[\s]*" " ")]
+     (loop [buf [] 
+            words (enumeration-seq (java.util.StringTokenizer. line))]
+       (let [[s rest :as normal] (split-words words (- limit margin))
+             ;; Hier behandeln wir den pathologischen Fall, wenn ein einzelnes
+             ;; Wort laenger als das `limit` ist.
+             [s' rest'] (if (and (str/blank? s) (first rest))
+                          [(first rest) (next rest)]
+                          normal)
+             ret (conj buf (str padding s'))]
+         (if-some [zs (seq rest')]
+           (recur ret rest')
+           (str/join "\n" ret)))))))
