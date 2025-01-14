@@ -11,6 +11,12 @@
                  [org.commonmark/commonmark "0.22.0"]
                  [io.github.java-diff-utils/java-diff-utils "4.12"] ]
 
+  :plugins [[s3-wagon-private "1.2.0"]]
+  :repositories [["private" {:url "s3p://phoenixmvnrepo/release/" 
+                             :sign-releases false
+                             :passphrase :env 
+                             :username :env}]]
+
   :profiles {:uberjar {:aot :all}}
   :repl-options {:init-ns nassi.main}
   :uberjar-name "nassi.jar"

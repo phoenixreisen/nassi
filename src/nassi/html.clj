@@ -150,7 +150,7 @@
 
 (defn- html-with-inline-css [html-body]
   (str/join \newline
-    ["<!DOCTYPE html>" "<html>" "<head>" "<style>" 
+    ["<!DOCTYPE html>" "<html>" "<head>" "<meta charset=\"UTF-8\">" "<style>" 
      (slurp (io/resource "diagram.css"))
      "</style>" "</head>" "<body>" html-body "</body>" "</html>"]))
 
