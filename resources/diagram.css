@@ -220,7 +220,7 @@ html {
   border-top: var(--border-thickness) solid black;
 }
 
-.no-default-branch .branches .branch:last-child .expression,
-.no-default-branch .branches .branch:last-child .statement {
+.no-default-branch > .branches > .branch:last-child > .expression,
+.no-default-branch > .branches > .branch:last-child > .statement {
   border-right: none;
 }
