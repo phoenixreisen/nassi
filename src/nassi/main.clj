@@ -122,6 +122,11 @@
         (println html))
       @warnings)))
 
+
+;; TODO 
+;; - DEFAULT ohne Text scheint nicht zu funktionieren
+;; - Java-Interface 
+;; - Mehrere Specs auf einen Schlag generieren (s. Routenplanung)
 (defn -main [& args]
   (let [{:keys [input-file options exit-message ok?]} (validate-args args)]
     (if exit-message
