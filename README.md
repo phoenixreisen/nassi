@@ -30,6 +30,23 @@ This is what the resulting diagram looks like:
 
 As you can see, each line of the input file gets transformed to a single step in the resulting diagram (where empty lines are ignored).
 
+We can make our recipe even nicer by adding a PREAMBLE and an EPILOGUE, like in this  [example](/examples/ex0b.nassi):
+
+```
+PREAMBLE Gin & Tonic. If you can say it, you can make it. Right? Right, let's do it!
+
+Fill your glass with ice cubes.
+Add 6 ounces of Tonic water.
+Gently pur in 2 ounces of Gin.
+Press some lemon juice into the drink and add your garnish to the drink.
+
+EPILOGUE Enjoy!
+```
+
+This is what the resulting diagram looks like:
+
+![Gin and Tonic again](./examples/ex0b.jpg "Gin and Tonic again")
+
 Admittedly, structure-wise our "Gin and Tonic" recipe is a bit boring. So read on, to learn how to create more interesting specifications.
 
 
@@ -38,21 +55,23 @@ Admittedly, structure-wise our "Gin and Tonic" recipe is a bit boring. So read o
 In terms of syntax, *nassi* has a lot to offer. 
 Here are the keywords, that *nassi* understands:
 
-| Keyword | Example |
-| ------- | ------- |
-| IF      | `IF happy? { smile }` |
-| ELSE    | `IF happy? { smile } ELSE { cry }` |
-| SWITCH  | `SWITCH color { ... }` |
-| CASE    | `CASE yellow { bananas }` |
-| DEFAULT | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
-| FOR     | `FOR all candy { eat }` |
-| WHILE   | `WHILE candy left? { eat }` |
-| UNTIL   | `UNTIL bottle empty? { drink }` |
-| SUB     | `SUB yellow { bananas }`
-| THROW   | `THROW #wrong-password given password is incorrect` |
-| CATCH   | `CATCH { HANDLE ... }` |
-| HANDLE  | `HANDLE #wrong-password { note a failed login attempt }` |
-| INCLUDE | `INCLUDE "other-diagram.nassi"` |
+| Keyword  | Example |
+| -------  | ------- |
+| IF       | `IF happy? { smile }` |
+| ELSE     | `IF happy? { smile } ELSE { cry }` |
+| SWITCH   | `SWITCH color { ... }` |
+| CASE     | `CASE yellow { bananas }` |
+| DEFAULT  | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
+| FOR      | `FOR all candy { eat }` |
+| WHILE    | `WHILE candy left? { eat }` |
+| UNTIL    | `UNTIL bottle empty? { drink }` |
+| SUB      | `SUB yellow { bananas }`
+| THROW    | `THROW #wrong-password given password is incorrect` |
+| CATCH    | `CATCH { HANDLE ... }` |
+| HANDLE   | `HANDLE #wrong-password { note a failed login attempt }` |
+| INCLUDE  | `INCLUDE "other-diagram.nassi"` |
+| PREAMBLE | `PREAMBLE This spec is about...` |
+| EPILOGUE | `EPILOGUE That's it!` |
 
 Let's do another simple [example](/examples/ex1.nassi) - this time we use an IF/ELSE statement:
 
