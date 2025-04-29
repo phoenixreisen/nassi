@@ -199,6 +199,7 @@ IF """
 Ok, let's see that in action! Here is finally a somewhat realistic [example](/examples/ex4.nassi):
 
 ```
+PREAMBLE
 """ ## User authentication
 
 A user wants to login into the application. For this to happen, he needs an
