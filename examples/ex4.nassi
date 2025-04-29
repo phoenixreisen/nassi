@@ -1,3 +1,4 @@
+PREAMBLE
 """ ## User authentication
 
 A user wants to login into the application. For this to happen, he needs an
