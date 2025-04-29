@@ -13,6 +13,7 @@ endif
 
 syntax clear
 syntax case ignore
+syntax keyword nassiKeyword preamble epilogue
 syntax keyword nassiKeyword if else
 syntax keyword nassiKeyword switch case default
 syntax keyword nassiKeyword for while until sub
