@@ -41,6 +41,7 @@
 (deftest approval-test
   (testing "Could not approve:"
     (approve "simple.uc")
+    (approve "preamble.uc")
     (approve "for1.uc" )
     (approve "for2.uc" )
     (approve "while1.uc" )
@@ -56,4 +57,4 @@
     (approve "include1.uc")
     (approve "GutenMorgen.uc")))
 
-;(do (u/reset-uid!) (parse-diagram (io/resource (str "test/meta1.uc"))))
+;(do (u/reset-uid!) (parse-diagram (io/resource (str "test/preamble.uc"))))

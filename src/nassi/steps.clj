@@ -1,6 +1,7 @@
 (ns nassi.steps
   (:require 
     [nassi.stepper :as stepper]
+    [nassi.opts :as opts]
     [nassi.util :as u]
     [clojure.string :as str]
     [clojure.walk :as w]))
@@ -29,10 +30,10 @@
   "Internal links have the form `[!!id-of-something](#id-of-something)`. 
   This FN replaces the link-text of each internal link with its corresponding
   step number."
-  [[tag ctx s] node-id->step]
+  [[tag ctx s] node-id->link-name]
   [tag ctx (reduce (fn [ret [node-id step]]
                      (str/replace ret (str "[" node-id "]") (str "[" step "]"))) 
-             s @node-id->step)])
+             s node-id->link-name)])
 
 (defn- process-errorcoderef-node
   "Transforms a ERRORCODE node like so:
@@ -46,12 +47,17 @@
 (defn add-steps 
   "Adds steps to each SENTENCE- resp. PARAGRAPH node."
   [ast]
-  (let [stp (stepper/create)
+  (let [{:keys [preamble epilogue]} opts/*gen-options*
+        stp (stepper/create)
         node-id->step (atom {})]
     (->> ast
          (w/postwalk
            (fn [x] 
              (cond
+               (= :PREAMBLE x)                   (do (stepper/disable! stp preamble) x)
+               (= :PREAMBLE (u/node-type x))     (do (stepper/enable! stp) x)
+               (= :EPILOGUE x)                   (do (stepper/disable! stp epilogue) x)
+               (= :EPILOGUE (u/node-type x))     (do (stepper/enable! stp) x)
                (= :CASES x)                      (do (stepper/add-step! stp) x)
                (= :CASES (u/node-type x))        (do (stepper/remove-step! stp) x)
                (= :BLOCK x)                      (do (stepper/add-step! stp) x)
@@ -69,5 +75,5 @@
          (w/postwalk
            (fn [x] 
              (if (= :TEXT (u/node-type x))   
-               (process-internal-links x node-id->step)
+               (process-internal-links x @node-id->step)
                x))))))

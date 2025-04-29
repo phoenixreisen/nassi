@@ -2,7 +2,7 @@
   "In this NS contains the functionality to transform an AST into a
   HTML-Document."
   (:require 
-    [nassi.parse :as p]
+    [nassi.opts :as opts]
     [clojure.java.io :as io]
     [clojure.string :as str]
     [hiccup.core :as h]
@@ -11,21 +11,13 @@
     [nassi.md-para :as md-para]
     [nassi.steps :as steps]))
 
-(def ^:dynamic *gen-options* 
-  {:true "yes"
-   :false "no"
-   :catch "Exception-Handling"
-   :diff-change-bg "yellow"
-   :diff-insert-bg "lightgreen"
-   :diff-delete-bg "lightpink"})
-
 (defn- style [{:keys [diff-style]}]
   (when-some [key (get {:style-diff-delete        :diff-delete-bg
                         :style-diff-insert        :diff-insert-bg
                         :style-diff-change-delete :diff-change-bg
                         :style-diff-change        :diff-change-bg}
                     diff-style)]
-    (cond-> (str "background-color: " (get *gen-options* key))
+    (cond-> (str "background-color: " (get opts/*gen-options* key))
       (#{:style-diff-delete :style-diff-change-delete} diff-style)
       (str "; text-decoration:line-through"))))
 
@@ -34,6 +26,16 @@
 (def ^:private ^:const BLACK-LEFT-POINTING-TRIANGLE "&#x25C0")  
 
 (defn- xf-diagram [ctx & xs] [:div.diagram xs])
+
+(defn- xf-preamble [_ctx [step text]] 
+  (let [{:keys [id]} (second step)
+        [tag attributes content] text]
+    [tag (assoc attributes :id id) content]))
+
+(defn- xf-epilogue [_ctx [step text]] 
+  (let [{:keys [id]} (second step)
+        [tag attributes content] text]
+    [tag (assoc attributes :id id) content]))
 
 (defn- xf-block [ctx & xs] xs)
 
@@ -94,7 +96,7 @@
 (defn- xf-else [ctx block]
   [:div.default-branch {:style (style ctx)}
    [:div.expression 
-    [:div.expression-text [:b (get *gen-options* :false)]]]
+    [:div.expression-text [:b (get opts/*gen-options* :false)]]]
    [:div.statement block]])
 
 (defn- xf-if 
@@ -105,11 +107,11 @@
     [:div.branches
      [:div.branch {:style (style ctx)}
       [:div.expression 
-       [:div.expression-text [:b (get *gen-options* :true)]]]
+       [:div.expression-text [:b (get opts/*gen-options* :true)]]]
       [:div.statement block]]
      [:div.default-branch
       [:div.expression
-       [:div.expression-text [:b (get *gen-options* :false)]]]
+       [:div.expression-text [:b (get opts/*gen-options* :false)]]]
       [:div.statement]]]])
   ([ctx [step text] block else] 
    [:div.branching
@@ -118,7 +120,7 @@
     [:div.branches
      [:div.branch {:style (style ctx)}
       [:div.expression 
-       [:div.expression-text [:b (get *gen-options* :true)]]]
+       [:div.expression-text [:b (get opts/*gen-options* :true)]]]
       [:div.statement block]]
      else]]))
 
@@ -132,7 +134,7 @@
     [:div.empty]
     [:div.branching.no-default-branch {:style (style ctx)}
      [:div.expression 
-      [:div.expression-text [:b (get *gen-options* :catch)]]]
+      [:div.expression-text [:b (get opts/*gen-options* :catch)]]]
      [:div.branches
       handlers]]))
 
@@ -161,6 +163,8 @@
   (h/html 
     (insta/transform 
       {:DIAGRAM     xf-diagram
+       :PREAMBLE    xf-preamble
+       :EPILOGUE    xf-epilogue
        :TEXTSTMT    xf-textstmt
        :TEXT        xf-text
        :BLOCK       xf-block

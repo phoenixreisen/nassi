@@ -1,5 +1,6 @@
 (ns nassi.main
   (:require 
+    [nassi.opts :as opts]
     [nassi.warn :as w]
     [nassi.util :as u]
     [nassi.diff :as diff]
@@ -37,6 +38,10 @@
     :default "No"] 
    [nil "--opt-catch TEXT" "Use TEXT as label for exception handling."
     :default "Exception-Handling"] 
+   [nil "--opt-preamble TEXT" "Use TEXT as label for links to the preamble section."
+    :default "Preamble"] 
+   [nil "--opt-epilogue TEXT" "Use TEXT as label for links to the epilogue section."
+    :default "Epilogue"] 
    [nil "--version" "Show version information."]
    ["-h" "--help" "Show this help."]])
 
@@ -87,7 +92,7 @@
   should exit (with an error message, and optional ok status), or a map with
   the input-file and the options provided."
   [args]
-  (let [{:keys [options arguments errors summary]} 
+  (let [{:keys [options arguments errors _summary]} 
         (cli/parse-opts args cli-options)]
     (cond
       (:help options)     {:exit-message usage :ok? true}
@@ -96,15 +101,25 @@
       (= 1 (count arguments)) {:input-file (first arguments) :options options}
       :else               {:exit-message usage})))
 
-(defn- generate-html-file [input-file {:keys [diff opt-bgcol-change
-                                              opt-bgcol-delete opt-bgcol-insert
-                                              opt-catch opt-false opt-true
-                                              output show-metadata metadata-pos
+(defn- generate-html-file [input-file {:keys [diff 
+                                              opt-bgcol-change
+                                              opt-bgcol-delete 
+                                              opt-bgcol-insert
+                                              opt-catch 
+                                              opt-false 
+                                              opt-true
+                                              opt-preamble
+                                              opt-epilogue
+                                              output 
+                                              show-metadata 
+                                              metadata-pos
                                               metadata-key]}]
-  (with-bindings {#'nassi.html/*gen-options* 
+  (with-bindings {#'nassi.opts/*gen-options* 
                   {:true            opt-true
                    :false           opt-false
                    :catch           opt-catch
+                   :preamble        opt-preamble
+                   :epilogue        opt-epilogue
                    :diff-change-bg  opt-bgcol-change
                    :diff-insert-bg  opt-bgcol-insert
                    :diff-delete-bg  opt-bgcol-delete}}
@@ -143,12 +158,14 @@
           (println (.getMessage e)))))))
 
 #_(try 
-    (generate-html-file "resources/test/include1.uc"      
+    (generate-html-file "resources/test/preamble.uc"      
       {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
        :inline-css true
        :opt-true "Ja"
        :opt-false "Nein"
        :opt-catch "Behandlung der Ausnahmen"
+       :opt-preamble "Einleitung"
+       :opt-epilogue "Epilog"
        })
     (catch Exception x (.printStackTrace x)))
 
@@ -165,5 +182,3 @@
        :opt-catch "Behandlung der Ausnahmen"
        })
     (catch Exception x (.printStackTrace x)))
-
-

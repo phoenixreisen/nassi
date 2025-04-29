@@ -6,7 +6,10 @@ DIAGRAM     = [METADATA] STATEMENT [_ STATEMENT]*
 METADATA    = [METAINFO]*
 METAINFO    = <';'> __ #"[A-Za-z][\.A-Za-z0-9_-]+" __ <'='> __ #".*" __ <'\n'>
 
-<STATEMENT> = _ (INCLUDE | FOR | WHILE | UNTIL | SUB | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
+<STATEMENT> = _ (PREAMBLE | EPILOGUE | INCLUDE | FOR | WHILE | UNTIL | SUB | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
+
+PREAMBLE    = <'preamble'> _ TEXT
+EPILOGUE    = <'epilogue'> _ TEXT
 
 INCLUDE     = <'include'> _ FILENAME
 FILENAME    = #"\".*\""
@@ -36,4 +39,3 @@ TEXTSTMT    = TEXT
 <TEXT>      = PARAGRAPH / SENTENCE
 SENTENCE    = #"[^\n^{^}]+" 
 PARAGRAPH   = #"(?s)\"\"\".*?\"\"\""
-
