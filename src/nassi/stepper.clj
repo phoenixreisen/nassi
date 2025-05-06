@@ -40,11 +40,14 @@
     (fn [step] (pop step))))
 
 (defn pin-step! 
-  "Save current step for later use via `fetch-step!`."
+  "Save current step for later use via `fetch-step!` - but only, if there isn't
+  already a pinned step under the same `label`."
   [x label]
   (swap! x 
-    (fn [{:keys [stack] :as ret}]
-      (update ret :pins #(assoc % label (peek stack))))))
+    (fn [{:keys [stack pins] :as ret}]
+      (if (contains? pins label)
+        ret
+        (update ret :pins #(assoc % label (peek stack)))))))
 
 (defn fetch-step! 
   "Make the step, that was saved under `label` the current step and return a

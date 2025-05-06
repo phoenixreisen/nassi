@@ -30,3 +30,13 @@
       (is (= "3" (inc-step! x)))
       (pop-step! x)
       (is (= "2.4.2" (inc-step! x))))))
+
+(deftest already-pinned-test 
+  (testing "stepper FNs"
+    (let [x (create)]
+      (is (= "1" (inc-step! x)))
+      (pin-step! x :one)
+      (is (= "2" (inc-step! x)))
+      (pin-step! x :one)  ; this should have no effect
+      (fetch-step! x :one)
+      (is (= "2" (inc-step! x))))))
