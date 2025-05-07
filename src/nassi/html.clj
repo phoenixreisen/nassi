@@ -124,9 +124,9 @@
       [:div.statement block]]
      else]]))
 
-(defn- xf-throw [ctx [_ _ error-code] [step text]] 
+(defn- xf-throw [{:keys [link-target-id]} [_ _ error-code] [step text]] 
   [:div.block step 
-   [:b BLACK-LEFT-POINTING-TRIANGLE " " (subs error-code 1)]
+   [:b BLACK-LEFT-POINTING-TRIANGLE " " [:a {:href link-target-id} (subs error-code 1)]]
    text])
 
 (defn- xf-catch [ctx handlers] 
@@ -140,8 +140,8 @@
 
 (defn- xf-handlers [ctx & xs] xs)
 
-(defn- xf-errorcoderef [{:keys [step]} error-code]
-  [:div [:div.step step]
+(defn- xf-errorcoderef [{:keys [id step]} error-code]
+  [:div {:id id} [:div.step step]
    [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]])
 
 (defn- xf-handle [ctx x block] 

@@ -6,7 +6,7 @@
     [clojure.string :as str]
     [clojure.walk :as w]))
 
-(defn- add-step-to-text-node-ctx
+(defn- add-step-to-text-node-ctx!
   "Inserts the `step` into the context map `ctx`.
   As a side-effect, the map within the atom `node-id->step` gets updated."
   [[tag {:keys [node-id] :as ctx} s :as node] step node-id->step]
@@ -35,21 +35,40 @@
                      (str/replace ret (str "[" node-id "]") (str "[" step "]"))) 
              s node-id->link-name)])
 
-(defn- process-errorcoderef-node
+(defn- process-errorcoderef-node!
   "Transforms a ERRORCODE node like so:
 
   `[:ERRORCODEREF {...} [:ERRORCODE _ <error-code>]]` 
-  => `[:ERRORCODEREF {:step step, ...} <error-code>]`"
-  [[type ctx [_ _ error-code]] stepper] 
-  (assert (= type :ERRORCODEREF))
-  [type (assoc ctx :step (stepper/fetch-step! stepper error-code)) error-code])
+  => `[:ERRORCODEREF {:step step, ...} <error-code>]`
+  
+  Also, this updates the atom `errorcode->id`."
+  [[tag ctx [_ _ error-code]] stepper errorcode->id] 
+  (assert (= tag :ERRORCODEREF))
+  (let [id (str "nassi_errorcoderef_" (subs error-code 1))]
+    (swap! errorcode->id assoc error-code id)
+    [tag 
+     (assoc ctx
+       :id id
+       :step (stepper/fetch-step! stepper error-code)) 
+     error-code]))
+
+(defn- add-link-target-id 
+  "Adds the HTML identifier of the corresponding HANDLE to the `ctx` of this
+  THROW node."
+  [[tag ctx errorcode-node text-node] errorcode->id]
+  (assert (= tag :THROW))
+  (let [[_ _ errorcode] errorcode-node
+        link-target-id (str "#" (get errorcode->id errorcode))]
+    [tag (assoc ctx :link-target-id link-target-id) errorcode-node text-node]))
 
 (defn add-steps 
   "Adds steps to each SENTENCE- resp. PARAGRAPH node."
   [ast]
   (let [{:keys [preamble epilogue]} opts/*gen-options*
         stp (stepper/create)
-        node-id->step (atom {})]
+        node-id->step (atom {})
+        ;; We need this to create hyperlinks from THROW to HANDLE sections.
+        errorcode->id (atom {})]
     (->> ast
          (w/postwalk
            (fn [x] 
@@ -63,17 +82,19 @@
                (= :BLOCK x)                      (do (stepper/add-step! stp) x)
                (= :BLOCK (u/node-type x))        (do (stepper/remove-step! stp) x)
                (= :ELSE x)                       (do (stepper/inc-step! stp) x)
-               (= :TEXT (u/node-type x))         (add-step-to-text-node-ctx x 
+               (= :TEXT (u/node-type x))         (add-step-to-text-node-ctx! x 
                                                    (stepper/inc-step! stp)
                                                    node-id->step)
                (= :THROW (u/node-type x))        (let [[_ _ [_ _ error-code]] x]
                                                    (stepper/pin-step! stp error-code)
                                                    x)
-               (= :ERRORCODEREF (u/node-type x)) (process-errorcoderef-node x stp) 
+               (= :ERRORCODEREF (u/node-type x)) (process-errorcoderef-node! x stp errorcode->id) 
                (= :HANDLE (u/node-type x))       (do (stepper/pop-step! stp) x)
                :else x)))
          (w/postwalk
            (fn [x] 
-             (if (= :TEXT (u/node-type x))   
-               (process-internal-links x @node-id->step)
-               x))))))
+             (cond
+               (= :TEXT (u/node-type x))         (process-internal-links x @node-id->step)
+               (= :THROW (u/node-type x))        (add-link-target-id x @errorcode->id)               
+               :else x))))))
+

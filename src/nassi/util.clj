@@ -141,6 +141,6 @@
                           [(first rest) (next rest)]
                           normal)
              ret (conj buf (str padding s'))]
-         (if-some [zs (seq rest')]
+         (if-some [_ (seq rest')]
            (recur ret rest')
            (str/join "\n" ret)))))))
