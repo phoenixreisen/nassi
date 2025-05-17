@@ -40,6 +40,12 @@
 (defn- xf-else [ctx block] 
   (str "ELSE" \newline block))
 
+(defn- xf-preamble [ctx text]
+  (str "PREAMBLE" \newline text))
+
+(defn- xf-epilogue [ctx text]
+  (str "EPILOGUE" \newline text))
+
 (defn- xf-if 
   ([ctx text block] 
    (str "IF" \newline text block))
@@ -67,6 +73,8 @@
   (apply str
     (insta/transform 
       {:DIAGRAM     xf-diagram
+       :PREAMBLE    xf-preamble
+       :EPILOGUE    xf-epilogue
        :TEXTSTMT    xf-textstmt
        :TEXT        xf-text
        :BLOCK       xf-block

@@ -76,7 +76,8 @@
     (w/postwalk
       (fn [n] 
         (when (contains? #{:CASE :CATCH :DEFAULT :ELSE :FOR :HANDLE :IF :SUB
-                           :SWITCH :TEXT :THROW :UNTIL :WHILE}
+                           :SWITCH :TEXT :THROW :UNTIL :WHILE 
+                           :PREAMBLE :EPILOGUE}
                 (u/node-type n))
           (let [[tag {:keys [range uid]} x & xs] n]
             (swap! ret assoc range uid)))
