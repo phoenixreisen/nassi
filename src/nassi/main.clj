@@ -101,7 +101,7 @@
       (= 1 (count arguments)) {:input-file (first arguments) :options options}
       :else               {:exit-message usage})))
 
-(defn- generate-html-file [input-file {:keys [diff 
+(defn generate-html-file [input-file {:keys [diff 
                                               opt-bgcol-change
                                               opt-bgcol-delete 
                                               opt-bgcol-insert
@@ -136,7 +136,6 @@
         (spit output html)
         (println html))
       @warnings)))
-
 
 ;; TODO 
 ;; - DEFAULT ohne Text scheint nicht zu funktionieren
