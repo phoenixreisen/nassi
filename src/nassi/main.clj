@@ -14,6 +14,7 @@
 
 (def ^:private cli-options
   [["-o" "--output FILE" "Write output to FILE."]
+   ["-b" "--batch DIR" "Process several input FILES at once and write output files to DIR."]
    ["-d" "--diff FILE" "Use FILE as original file."]
    [nil "--[no-]show-metadata" "Render metadata?" :default true]
    ["-k" "--metadata-key KEY" 
@@ -81,6 +82,7 @@
     [version
      ""
      "Usage: nassi.jar [options] input-file"
+     "       nassi.jar [options] --batch output-dir input-file1 input-file2 ..."
      "       nassi.jar [options] --diff original-file revised-file"
      "Options:" 
      (str/join \newline
@@ -90,7 +92,7 @@
 (defn- validate-args
   "Validate command line arguments. Either return a map indicating the program
   should exit (with an error message, and optional ok status), or a map with
-  the input-file and the options provided."
+  the input-files and the options provided."
   [args]
   (let [{:keys [options arguments errors _summary]} 
         (cli/parse-opts args cli-options)]
@@ -98,7 +100,9 @@
       (:help options)     {:exit-message usage :ok? true}
       (:version options)  {:exit-message version :ok? true}
       errors              {:exit-message (error-msg errors)}
-      (= 1 (count arguments)) {:input-file (first arguments) :options options}
+      (= 1 (count arguments)) {:input-files arguments :options options}
+      (and (:batch options) (> (count arguments) 1)) {:input-files arguments 
+                                                      :options options}
       :else               {:exit-message usage})))
 
 (defn generate-html-file [input-file {:keys [diff 
@@ -137,24 +141,46 @@
         (println html))
       @warnings)))
 
+(defn- batch-process [input-files options]
+  (let [output-dir (io/file (:batch options))]
+    (if-not (.isDirectory (io/file output-dir))
+      (exit 1 (str "Directory '" output-dir "' does not exist!"))
+      (doseq [input-file input-files
+              :let [output-file (.getCanonicalPath 
+                                  (io/file output-dir 
+                                    (.getName (io/file (str input-file ".html")))))]]
+        (try 
+          (when-some [warnings (generate-html-file input-file 
+                                 (assoc options :output output-file))]
+            (println (str "Warning(s) for input-file '" input-file "':"))
+            (doseq [w warnings] (println w)))
+          (catch clojure.lang.ExceptionInfo e
+            (println (str "Error in input-file '" input-file "':"))
+            (if-some [{:keys [failure]} (ex-data e)]
+              (failure/pprint-failure failure)
+              (.printStackTrace e)))
+          (catch java.io.FileNotFoundException e 
+            (println (str "Error in input-file '" input-file "':"))
+            (println (.getMessage e))))))))
+
 ;; TODO 
 ;; - DEFAULT ohne Text scheint nicht zu funktionieren
 ;; - Java-Interface 
-;; - Mehrere Specs auf einen Schlag generieren (s. Routenplanung)
 (defn -main [& args]
-  (let [{:keys [input-file options exit-message ok?]} (validate-args args)]
-    (if exit-message
-      (exit (if ok? 0 1) exit-message)
-      (try 
-        (when-some [warnings (generate-html-file input-file options)]
-          (doseq [w warnings] (println w)))
-        (generate-html-file input-file options)
-        (catch clojure.lang.ExceptionInfo e
-          (if-some [{:keys [failure]} (ex-data e)]
-            (failure/pprint-failure failure)
-            (.printStackTrace e)))
-        (catch java.io.FileNotFoundException e 
-          (println (.getMessage e)))))))
+  (let [{:keys [input-files options exit-message ok?]} (validate-args args)]
+    (cond 
+      exit-message      (exit (if ok? 0 1) exit-message)
+      (:batch options)  (batch-process input-files options)
+      :else (let [input-file (first input-files)]
+              (try 
+                (when-some [warnings (generate-html-file input-file options)]
+                  (doseq [w warnings] (println w)))
+                (catch clojure.lang.ExceptionInfo e
+                  (if-some [{:keys [failure]} (ex-data e)]
+                    (failure/pprint-failure failure)
+                    (.printStackTrace e)))
+                (catch java.io.FileNotFoundException e 
+                  (println (.getMessage e))))))))
 
 #_(try 
     (generate-html-file "resources/test/preamble.uc"      
