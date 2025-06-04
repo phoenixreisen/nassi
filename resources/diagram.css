@@ -212,6 +212,11 @@ code {
   shape-outside: polygon(0 0, 100% 0, 0 100%);
 }
 
+.branch:last-child > .expression,
+.branch:last-child > .statement {
+  border-right: 0
+}
+
 .default-branch > .expression > .expression-text {
   text-align: right;
 }
