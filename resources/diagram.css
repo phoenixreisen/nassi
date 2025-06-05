@@ -181,6 +181,9 @@ code {
   display: grid;
 }
 
+.when > .branches {
+  grid-template-columns: auto min-content;
+}
 
 .branch, .default-branch {
   display: grid;
