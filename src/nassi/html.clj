@@ -101,7 +101,7 @@
 
 (defn- xf-if 
   ([ctx [step text] block] 
-   [:div.branching
+   [:div.branching.when
     [:div.expression step
      [:div.expression-text text]]
     [:div.branches
