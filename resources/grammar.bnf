@@ -4,7 +4,7 @@ DIAGRAM     = [METADATA] STATEMENT [_ STATEMENT]*
 <__>        = <#"[\h]*">    (* optional horizontal whitespace *)
 
 METADATA    = [METAINFO]*
-METAINFO    = <';'> __ #"[A-Za-z][\.A-Za-z0-9_-]+" __ <'='> __ #".*" __ <'\n'>
+METAINFO    = <';'> __ #"[A-Za-z][\.A-Za-z0-9_-]+" __ <'='> __ #".*" __ #"\r?\n"
 
 <STATEMENT> = _ (PREAMBLE | EPILOGUE | INCLUDE | FOR | WHILE | UNTIL | SUB | IF | SWITCH | THROW | CATCH | TEXTSTMT) _
 
