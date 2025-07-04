@@ -61,7 +61,7 @@ Here are the keywords, that *nassi* understands:
 | ELSE     | `IF happy? { smile } ELSE { cry }` |
 | SWITCH   | `SWITCH color { ... }` |
 | CASE     | `CASE yellow { bananas }` |
-| DEFAULT  | `DEFAULT pink { panther }` or `DEFAULT { forty-two }` |
+| DEFAULT  | `DEFAULT pink { panther }` |
 | FOR      | `FOR all candy { eat }` |
 | WHILE    | `WHILE candy left? { eat }` |
 | UNTIL    | `UNTIL bottle empty? { drink }` |

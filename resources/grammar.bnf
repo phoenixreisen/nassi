@@ -29,8 +29,8 @@ HANDLE      = <'handle'> _ ERRORCODEREF _ BLOCK
 
 SWITCH      = <'switch'>  _ TEXT _ <'{'> _ CASES _ <'}'>
 CASES       = (CASE | DEFAULT) [_ (CASE | DEFAULT)]*
-CASE        = <'case'>    _  TEXT _  BLOCK
-DEFAULT     = <'default'> _ [TEXT _] BLOCK
+CASE        = <'case'>    _ TEXT _ BLOCK
+DEFAULT     = <'default'> _ TEXT _ BLOCK
 
 BLOCK       = <'{'> [_ STATEMENT]+ _ <'}'>
 ERRORCODE   = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
