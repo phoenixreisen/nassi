@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.7.1 - 2025-07-18  
+- FIX: Issue #6 Exception in thread "main" java.lang.NoClassDefFoundError: java/util/SequencedCollection
+
 ## 0.7.0 - 2025-07-04  
 - FEATURE REMOVED: Issue #5 Disallow DEFAULT statements without TEXT
 
