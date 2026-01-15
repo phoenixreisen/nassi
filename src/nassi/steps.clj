@@ -38,19 +38,36 @@
 (defn- process-errorcoderef-node!
   "Transforms a ERRORCODE node like so:
 
-  `[:ERRORCODEREF {...} [:ERRORCODE _ <error-code>]]` 
-  => `[:ERRORCODEREF {:step step, ...} <error-code>]`
+  [:ERRORCODEREF {...} 
+    [:ERRORCODE _ <error-code1>] 
+    [:ERRORCODE _ <error-code2>] 
+    [:ERRORCODE _ <error-code3>] 
+    ...] 
+
+  => [:ERRORCODEREF
+       {error-code1 {:step step, :id id ...}
+        error-code2 {:step step, :id id ...}
+        error-code3 {:step step, :id id ...}
+        ...}]`
   
-  Also, this updates the atom `errorcode->id`."
-  [[tag ctx [_ _ error-code]] stepper errorcode->id] 
+  As a side-effect, this updates the atom `errorcode->id`."
+
+  [[tag ctx & error-codes] stepper errorcode->id] 
+
   (assert (= tag :ERRORCODEREF))
-  (let [id (str "nassi_errorcoderef_" (subs error-code 1))]
-    (swap! errorcode->id assoc error-code id)
-    [tag 
-     (assoc ctx
-       :id id
-       :step (stepper/fetch-step! stepper error-code)) 
-     error-code]))
+
+  (let [[_ _ ec1] (first error-codes)
+        m (into {} 
+            (for [[_ ec-ctx ec] error-codes
+                  :let [new-ec-ctx (assoc ec-ctx 
+                                     :step (stepper/fetch-step! stepper ec)
+                                     :id   (str "nassi_errorcoderef_" (subs ec 1)))]]
+              [ec new-ec-ctx]))]
+
+    (doseq [[ec {:keys [id]}] m] 
+      (swap! errorcode->id assoc ec id))
+
+    [tag (assoc ctx :step (stepper/fetch-step! stepper ec1)) m]))
 
 (defn- add-link-target-id 
   "Adds the HTML identifier of the corresponding HANDLE to the `ctx` of this

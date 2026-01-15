@@ -140,14 +140,16 @@
 
 (defn- xf-handlers [ctx & xs] xs)
 
-(defn- xf-errorcoderef [{:keys [id step]} error-code]
-  [:div {:id id} [:div.step step]
-   [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]])
+(defn- xf-errorcoderef [{:keys [id step]} error-codes]
+  (for [[error-code {:keys [id step]}] error-codes]
+    [:div.expression 
+     [:div.expression-text 
+      [:div {:id id} [:div.step step]
+       [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]]]]))
 
-(defn- xf-handle [ctx x block] 
+(defn- xf-handle [ctx errorcoderef block] 
  [:div.branch {:style (style ctx)}
-  [:div.expression 
-   [:div.expression-text x]]
+  errorcoderef
   [:div.statement block]]) 
 
 (defn- html-with-inline-css [html-body]
@@ -185,7 +187,7 @@
        :ERRORCODEREF xf-errorcoderef} 
       (steps/add-steps ast))))
 
-;; TODO sollten wir vielleicht besser im "diagram.css" als CSS-Klassen definieren. 
+;; TODO should better be defined as a CSS class in "diagram.css"
 (def ^:private table-style 
   {:style 
    (str 

@@ -13,17 +13,21 @@
   "Returns a pair of maps `[thrown handled]` containing the thrown error-codes
   and the handled error-codes. Each map is a mapping `error-code->linenumber`."
   [ast]
-  (let [thrown (atom {})
-        handled (atom {})]
+  (let [thrown  (atom {})
+        handled (atom {})
+
+        extract-error-codes (fn [[_ _ & error-codes]] 
+                              (doseq [[_ ctx ec] error-codes
+                                      :let [ln (linenumber ctx)]]
+                                (swap! handled assoc ec ln)))]
     (w/postwalk
       (fn [x] 
         (cond
           (= :THROW (u/node-type x))   (let [[_ _ [_ ctx error-code]] x
                                              ln (linenumber ctx)]
                                          (swap! thrown assoc error-code ln))
-          (= :HANDLE (u/node-type x))  (let [[_ _ [_ _ [_ ctx error-code]]] x
-                                             ln (linenumber ctx)]
-                                         (swap! handled assoc error-code ln))
+          (= :HANDLE (u/node-type x))  (let [[_ _ error-code-ref] x]
+                                         (extract-error-codes error-code-ref))
           :else x))
       ast)
     [@thrown @handled]))

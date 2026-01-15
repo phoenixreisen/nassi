@@ -1,0 +1,29 @@
+Im Folgenden testen wir, optionalen Text hinter der `ERRORCODEREF` eines `HANDLE` Statements.
+
+THROW #exception-1 Das hier ist die erste Exception.
+
+THROW #exception-2 """Nun folgt die 
+**zweite** Exception."""
+
+THROW #exception-3 Und die Dritte!!!
+THROW #exception-4 Vier
+THROW #exception-5 Fünfte Exception 
+THROW #exception-6 Und die Sechste!!!
+
+"""
+Mal gucken, ob es funktioniert...
+"""
+
+CATCH {
+
+  HANDLE #exception-1 #exception-3 
+  #exception-4 #exception-5 #exception-6
+  {
+    Behandlung der ersten Exception.
+  }
+
+  HANDLE #exception-2 {
+    Behandlung der zweiten Exception.
+ }
+
+}

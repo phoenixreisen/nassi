@@ -146,6 +146,6 @@
          (move-metadata-to-diagram-ctx)
          (preprocess-diagram (.getParentFile (io/file x))))))
 
-#_(let [[_ {:keys [meta]} :as ast] (parse-diagram (io/resource "test/include1.uc"))] 
-    meta)
-;(clojure.pprint/pp)
+#_(let [[_ {:keys [meta]} :as ast] (parse-diagram (io/resource "test/throw3.nassi"))] 
+    ast)
+    ;(clojure.pprint/pprint ast))

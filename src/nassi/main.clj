@@ -135,7 +135,7 @@
                  (diff/to-html diff input-file)
                  (let [ast (p/parse-diagram input-file)]
                    (reset! warnings (seq (w/exception-warnings ast)))
-                   (html/to-html (p/parse-diagram input-file) opts)))]
+                   (html/to-html ast opts)))] 
       (if output
         (spit output html)
         (println html))
@@ -164,7 +164,6 @@
             (println (.getMessage e))))))))
 
 ;; TODO 
-;; - DEFAULT ohne Text scheint nicht zu funktionieren
 ;; - Java-Interface 
 (defn -main [& args]
   (let [{:keys [input-files options exit-message ok?]} (validate-args args)]
@@ -183,7 +182,7 @@
                   (println (.getMessage e))))))))
 
 #_(try 
-    (generate-html-file "resources/test/preamble.uc"      
+    (generate-html-file "resources/test/throw3.nassi"      
       {:output "/home/jan/repos/phoenixreisen/nassi/t.html"
        :inline-css true
        :opt-true "Ja"

@@ -34,7 +34,7 @@ DEFAULT     = <'default'> _ TEXT _ BLOCK
 
 BLOCK       = <'{'> [_ STATEMENT]+ _ <'}'>
 ERRORCODE   = #"(#[A-Za-z][\.A-Za-z0-9_-]+)"
-ERRORCODEREF = ERRORCODE
+ERRORCODEREF = ERRORCODE [_ ERRORCODE]*
 TEXTSTMT    = TEXT
 <TEXT>      = PARAGRAPH / SENTENCE
 SENTENCE    = #"[^\n^{^}]+" 
