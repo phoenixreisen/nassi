@@ -131,26 +131,27 @@
 
 (defn- xf-catch [ctx handlers] 
   (list 
-    [:div.empty]
-    [:div.branching.no-default-branch {:style (style ctx)}
-     [:div.expression 
-      [:div.expression-text [:b (get opts/*gen-options* :catch)]]]
-     [:div.branches
-      handlers]]))
+    [:div.empty] ;; TODO brauchen wir das noch
+    [:div.exception-handling {:style (style ctx)}
+     [:div [:b (get opts/*gen-options* :catch)]]
+     [:div.catches
+      handlers]
+     ]))
 
 (defn- xf-handlers [ctx & xs] xs)
 
 (defn- xf-errorcoderef [{:keys [id step]} error-codes]
-  (for [[error-code {:keys [id step]}] error-codes]
-    [:div.expression 
-     [:div.expression-text 
-      [:div {:id id} [:div.step step]
-       [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]]]]))
+  [:div.exceptions
+   (for [[error-code {:keys [id step]}] error-codes]
+     [:div.exception 
+       [:div {:id id} 
+        [:div.step step]
+        [:b BLACK-RIGHT-POINTING-TRIANGLE " " (subs error-code 1)]]])])
 
 (defn- xf-handle [ctx errorcoderef block] 
- [:div.branch {:style (style ctx)}
-  errorcoderef
-  [:div.statement block]]) 
+  [:div.catch {:style (style ctx)}
+   errorcoderef
+   [:div.statement block]]) 
 
 (defn- html-with-inline-css [html-body]
   (str/join \newline

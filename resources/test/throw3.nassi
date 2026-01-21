@@ -1,14 +1,15 @@
-Im Folgenden testen wir, optionalen Text hinter der `ERRORCODEREF` eines `HANDLE` Statements.
+PREAMBLE
+<b>Im Folgenden testen wir, das Feature <i>"catching multiple exceptions in a single catch clause"</i></b>
+ 
 
-THROW #exception-1 Das hier ist die erste Exception.
+THROW #ex-1 Das hier ist die erste Exception.
 
-THROW #exception-2 """Nun folgt die 
+THROW #ex-2 """Nun folgt die 
 **zweite** Exception."""
 
-THROW #exception-3 Und die Dritte!!!
-THROW #exception-4 Vier
-THROW #exception-5 Fünfte Exception 
-THROW #exception-6 Und die Sechste!!!
+THROW #ex-3 Und die Dritte!!!
+THROW #ex-4 Vier
+THROW #ex-5 Fünfte Exception 
 
 """
 Mal gucken, ob es funktioniert...
@@ -16,14 +17,17 @@ Mal gucken, ob es funktioniert...
 
 CATCH {
 
-  HANDLE #exception-1 #exception-3 
-  #exception-4 #exception-5 #exception-6
+  HANDLE #ex-1 #ex-2 
+  #ex-3 
   {
-    Behandlung der ersten Exception.
+    The system logs the exception.
+
+    The system returns an appropriate error code.
   }
 
-  HANDLE #exception-2 {
-    Behandlung der zweiten Exception.
+  HANDLE #ex-4 #ex-5 
+  {
+    too short :-(
  }
 
 }
