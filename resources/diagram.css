@@ -265,6 +265,7 @@ code {
 .catch {
   display: flex;
   flex-direction: column;
+  flex: 1;
   border-right: var(--border-thickness) solid black;
 }
 

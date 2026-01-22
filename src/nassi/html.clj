@@ -151,7 +151,7 @@
 (defn- xf-handle [ctx errorcoderef block] 
   [:div.catch {:style (style ctx)}
    errorcoderef
-   [:div.statement block]]) 
+   [:div.handling block]]) 
 
 (defn- html-with-inline-css [html-body]
   (str/join \newline
