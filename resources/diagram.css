@@ -173,6 +173,7 @@ code {
 }
 
 .branching > .expression {
+  padding: 0.5rem;
   text-align: center;
   border-bottom: var(--border-thickness) solid black;
 }
@@ -183,6 +184,10 @@ code {
 
 .when > .branches {
   grid-template-columns: auto min-content;
+}
+
+.when > .expression {
+  padding: 0.5rem;
 }
 
 .branch, .default-branch {
