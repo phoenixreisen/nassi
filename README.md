@@ -69,6 +69,7 @@ Here are the keywords, that *nassi* understands:
 | THROW    | `THROW #wrong-password given password is incorrect` |
 | CATCH    | `CATCH { HANDLE ... }` |
 | HANDLE   | `HANDLE #wrong-password { note a failed login attempt }` |
+| HANDLE   | `HANDLE #no-cash #no-luck #no-fun { pray }` |
 | INCLUDE  | `INCLUDE "other-diagram.nassi"` |
 | PREAMBLE | `PREAMBLE This spec is about...` |
 | EPILOGUE | `EPILOGUE That's it!` |
