@@ -1,0 +1,20 @@
+
+PREAMBLE
+"""Preamble 
+Every line/paragraph starts with its expected step.
+"""
+
+1 text
+
+2 text
+
+THROW #foo 3 text 
+THROW #bar 4 text
+THROW #foobar 5 text
+
+CATCH {
+  HANDLE #foo #bar{ 3.1 text }
+  HANDLE #foobar { 5.1 text }
+}
+
+6 text 

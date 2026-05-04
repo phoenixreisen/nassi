@@ -1,0 +1,125 @@
+
+PREAMBLE
+"""Preamble 
+Every line/paragraph starts with its expected step.
+"""
+
+
+1 text
+
+2 text
+
+IF 3 if-cond {
+  IF 3.1 if-cond {
+    3.1.1 text
+    3.1.2 text
+  }
+  ELSE {
+    WHILE 3.2.1 while-cond {
+      3.2.1.1 text
+
+      UNTIL 3.2.1.2 until-cond {
+        3.2.1.2.1 text
+      }
+
+      FOR 3.2.1.3 for-cond {
+        SWITCH 3.2.1.3.1 switch-cond {
+          CASE 3.2.1.3.1.1 case-cond { 
+            3.2.1.3.1.1.1 text
+            3.2.1.3.1.1.2 text
+          }
+          CASE 3.2.1.3.1.2 case-cond {
+            3.2.1.3.1.2.1 text
+          }
+          DEFAULT 3.2.1.3.1.3 default-cond {
+            3.2.1.3.1.3.1 text
+          }
+        }
+      }
+      3.2.1.4 text
+    }
+    IF 3.2.2 if-cond {
+      3.2.2.1 xxx
+      3.2.2.2 xxx
+    }
+    ELSE {
+      3.2.3.1 xxx
+      3.2.3.2 xxx
+    }
+    3.2.4 xxx
+  }
+  3.3 xxx
+}
+
+FOR 4 for-cond {
+  4.1 text
+
+  WHILE 4.2 while-cond {
+    4.2.1 text
+
+    UNTIL 4.2.2 until-cond {
+      SWITCH 4.2.2.1 switch-cond {
+        CASE 4.2.2.1.1 case-cond { 
+          4.2.2.1.1.1 text
+          IF 4.2.2.1.1.2 if-cond {
+            IF 4.2.2.1.1.2.1 if-cond {
+              IF 4.2.2.1.1.2.1.1 if-cond {
+                4.2.2.1.1.2.1.1.1 text
+                4.2.2.1.1.2.1.1.2 text
+              }
+              ELSE {
+                4.2.2.1.1.2.1.2.1 xxx
+                IF 4.2.2.1.1.2.1.2.2 if-cond {
+                  4.2.2.1.1.2.1.2.2.1 xxx
+                  4.2.2.1.1.2.1.2.2.2 xxx
+                }
+                ELSE {
+                  4.2.2.1.1.2.1.2.3.1 xxx
+                  4.2.2.1.1.2.1.2.3.2 xxx
+                }
+                4.2.2.1.1.2.1.2.4 xxx
+              }
+              4.2.2.1.1.2.1.3 xxx
+            }
+            ELSE {
+              4.2.2.1.1.2.2.1 xxx
+              IF 4.2.2.1.1.2.2.2 if-cond  {
+                4.2.2.1.1.2.2.2.1 xxx
+                4.2.2.1.1.2.2.2.2 xxx
+              }
+              ELSE {
+                4.2.2.1.1.2.2.3.1 xxx
+                4.2.2.1.1.2.2.3.2 xxx
+              }
+              4.2.2.1.1.2.2.4 xxx
+            }
+            4.2.2.1.1.2.3 xxx
+          }
+          4.2.2.1.1.3 xxx
+        }
+        CASE 4.2.2.1.2 case-cond {
+          4.2.2.1.2.1 text
+        }
+        DEFAULT 4.2.2.1.3 default-cond {
+          4.2.2.1.3.1 text
+        }
+      }
+      4.2.2.2 text  
+    }
+    FOR 4.2.3 for-cond {
+      4.2.3.1 text
+    }
+    4.2.4 text
+  }
+  4.3 text
+  FOR 4.4 for-cond {
+    4.4.1 text
+    WHILE 4.4.2 while-cond {
+      4.4.2.1 text
+    }
+    4.4.3 text
+  }
+  4.5 text
+}
+
+5 text

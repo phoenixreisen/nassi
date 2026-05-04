@@ -8,6 +8,9 @@
     {:stack [[0]]
      :pins {}}))
 
+(defn- step-to-str [s]
+  (str/join "." s))
+
 (defn- swap-current-step! [x f]
   (swap! x 
     #(update % :stack
@@ -15,17 +18,17 @@
          (conj (pop stack)
            (f (peek stack)))))))
 
-(defn- step-to-string [x]
+(defn- current-step-to-string [x]
   (let [{:keys [disabled-const]} @x]
     (or disabled-const
-      (str/join "." (peek (:stack @x))))))
+      (step-to-str (peek (:stack @x))))))
 
 (defn inc-step! 
   "Increment current step and return a string representation."
   [x]
   (swap-current-step! x 
     (fn [step] (conj (pop step) (inc (last step)))))
-  (step-to-string x))
+  (current-step-to-string x))
  
 (defn add-step! 
   "Add a \"sub-step\" to the current step (e.g. 1.2 => 1.2.0)."
@@ -51,12 +54,14 @@
 
 (defn fetch-step! 
   "Make the step, that was saved under `label` the current step and return a
-  string representation."
+  string representation.
+
+  The previous step can be restored via `pop-step!`."
   [x label]
   (swap! x 
     (fn [{:keys [pins] :as ret}]
       (update ret :stack #(conj % (get pins label)))))
-  (step-to-string x))
+  (current-step-to-string x))
 
 (defn pop-step! 
   "Discard the current step."
@@ -64,6 +69,12 @@
   (swap! x 
     (fn [ret]
       (update ret :stack #(pop %)))))
+
+(defn get-step 
+  "Get a string representation of the step, that was saved under `label`.
+  This FN has no side-effect."
+  [x label]
+  (step-to-str (get-in @x [:pins label])))
 
 (defn contains-step? 
   "Returns true, if some step was pinned under the `label`."
@@ -79,7 +90,7 @@
       (-> ret
           (assoc  :disabled-const const-str)
           (update :stack #(conj % [Integer/MIN_VALUE]))))) ;; push dummy-step
-  (step-to-string x))
+  (current-step-to-string x))
 
 (defn enable!
   "Enable stepper `x`."

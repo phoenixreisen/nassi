@@ -1,0 +1,38 @@
+PREAMBLE
+"""Preamble 
+Every line/paragraph starts with its expected step.
+"""
+
+1 text
+
+"""2 text"""
+
+FOR 3 for-cond {
+  3.1 text
+
+  WHILE 3.2 while-cond {
+    3.2.1 text
+
+    UNTIL 3.2.2 until-cond {
+      3.2.2.1 text
+    }
+
+    FOR 3.2.3 for-cond {
+      3.2.3.1 text
+    }
+
+    3.2.4 text
+  }
+  3.3 text
+
+  FOR 3.4 for-cond {
+    3.4.1 text
+    WHILE 3.4.2 while-cond {
+      3.4.2.1 text
+    }
+    3.4.3 text
+  }
+  3.5 text
+}
+
+4 text

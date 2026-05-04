@@ -36,7 +36,7 @@
              s node-id->link-name)])
 
 (defn- process-errorcoderef-node!
-  "Transforms a ERRORCODE node like so:
+  "Transforms an ERRORCODE node like so:
 
   [:ERRORCODEREF {...} 
     [:ERRORCODE _ <error-code1>] 
@@ -60,7 +60,7 @@
         m (into {} 
             (for [[_ ec-ctx ec] error-codes
                   :let [new-ec-ctx (assoc ec-ctx 
-                                     :step (stepper/fetch-step! stepper ec)
+                                     :step (stepper/get-step stepper ec)
                                      :id   (str "nassi_errorcoderef_" (subs ec 1)))]]
               [ec new-ec-ctx]))]
 
@@ -114,4 +114,3 @@
                (= :TEXT (u/node-type x))         (process-internal-links x @node-id->step)
                (= :THROW (u/node-type x))        (add-link-target-id x @errorcode->id)               
                :else x))))))
-

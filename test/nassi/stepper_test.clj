@@ -19,6 +19,7 @@
       (pin-step! x :two-three)
       (is (contains-step? x :two-three))
       (is (= "2.4" (inc-step! x)))
+      (is (= "2.3" (get-step x :two-three)))
       (add-step! x)
       (disable! x "Preamble")
       (is (= "Preamble" (inc-step! x)))

@@ -1,8 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.8.2 - 2026-05-04 
+- FIX: Issue #9 Step numbering corrupt after CATCH inside BLOCK
+
 ## 0.8.0 - 2026-01-29  
 - ADDED: Issue #7 catching multiple exceptions in a single catch clause
+
 ## 0.7.1 - 2025-07-18  
 - FIX: Issue #6 Exception in thread "main" java.lang.NoClassDefFoundError: java/util/SequencedCollection
 

@@ -1,0 +1,19 @@
+PREAMBLE
+"""Preamble 
+Every line/paragraph starts with its expected step.
+"""
+
+1 one
+
+"""2 two"""
+
+IF """3 condition""" {
+  3.1 three point one
+  3.2 three point two
+}
+ELSE {
+  4.1 four point one
+  4.2 four point two
+}
+
+5 five
