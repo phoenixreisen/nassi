@@ -1,0 +1,42 @@
+{
+  "name": "nassi",
+  "displayName": "nassi",
+  "description": "Syntax highlighting and formatting for nassi (.nassi) specification files.",
+  "version": "0.1.0",
+  "publisher": "Phoenix Reisen GmbH",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phoenixreisen/nassi"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "nassi",
+        "aliases": [
+          "nassi",
+          "Nassi-Shneiderman"
+        ],
+        "extensions": [
+          ".nassi"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nassi",
+        "scopeName": "source.nassi",
+        "path": "./syntaxes/nassi.tmLanguage.json"
+      }
+    ]
+  }
+}

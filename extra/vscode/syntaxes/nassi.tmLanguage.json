@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "nassi",
+  "scopeName": "source.nassi",
+  "patterns": [
+    { "include": "#metadata" },
+    { "include": "#paragraph" },
+    { "include": "#keywords" },
+    { "include": "#errorcode" },
+    { "include": "#anchor" },
+    { "include": "#filename" },
+    { "include": "#braces" },
+    { "include": "#markdown-inline" }
+  ],
+  "repository": {
+    "metadata": {
+      "match": "^\\s*(;)\\s*([A-Za-z][\\.A-Za-z0-9_-]+)\\s*(=)\\s*(.*)$",
+      "name": "meta.metadata.nassi",
+      "captures": {
+        "1": { "name": "punctuation.definition.metadata.nassi" },
+        "2": { "name": "variable.other.key.nassi" },
+        "3": { "name": "keyword.operator.assignment.nassi" },
+        "4": { "name": "string.unquoted.value.nassi" }
+      }
+    },
+    "paragraph": {
+      "name": "string.quoted.triple.nassi",
+      "begin": "\"\"\"",
+      "end": "\"\"\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.nassi" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.nassi" }
+      },
+      "patterns": [
+        { "include": "#markdown-inline" }
+      ]
+    },
+    "keywords": {
+      "match": "(?i)(^\\s*|[{}]\\s*)\\b(preamble|epilogue|include|for|while|until|sub|if|else|switch|case|default|throw|catch|handle)\\b",
+      "captures": {
+        "1": { "name": "punctuation.section.block.nassi" },
+        "2": { "name": "keyword.control.nassi" }
+      }
+    },
+    "errorcode": {
+      "match": "#[A-Za-z][\\.A-Za-z0-9_-]+",
+      "name": "support.constant.errorcode.nassi"
+    },
+    "anchor": {
+      "match": "!![A-Za-z][\\.A-Za-z0-9_-]+",
+      "name": "entity.name.tag.anchor.nassi"
+    },
+    "filename": {
+      "match": "\"[^\"\\n]*\"",
+      "name": "string.quoted.double.nassi"
+    },
+    "braces": {
+      "match": "[{}]",
+      "name": "punctuation.section.block.nassi"
+    },
+    "markdown-inline": {
+      "patterns": [
+        {
+          "match": "(?<=\\s|^)#{1,6}[ \\t].*$",
+          "name": "markup.heading.nassi"
+        },
+        {
+          "match": "(\\[)([^\\]]*)(\\])(\\()([^)]*)(\\))",
+          "name": "meta.link.nassi",
+          "captures": {
+            "2": { "name": "string.other.link.title.nassi" },
+            "5": { "name": "markup.underline.link.nassi" }
+          }
+        },
+        {
+          "match": "\\*\\*[^*]+\\*\\*",
+          "name": "markup.bold.nassi"
+        },
+        {
+          "match": "(?<![A-Za-z0-9])\\*[^*\\n]+\\*(?![A-Za-z0-9])",
+          "name": "markup.italic.nassi"
+        },
+        {
+          "match": "</?i>",
+          "name": "markup.italic.nassi"
+        },
+        {
+          "match": "`[^`\\n]+`",
+          "name": "markup.inline.raw.nassi"
+        },
+        { "include": "#anchor" },
+        { "include": "#errorcode" }
+      ]
+    }
+  }
+}
