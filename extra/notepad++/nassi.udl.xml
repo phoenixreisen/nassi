@@ -16,13 +16,18 @@
         the leading !! / # plus following word characters are colored; a
         hyphenated tail may stop coloring at the first '-' depending on your
         Notepad++ word-character settings.
-      - Metadata lines are styled via the ';' line-comment rule, so a ';' that
-        appears mid-sentence would also start comment coloring on that line.
+      - Anchors and error codes inside links, e.g. [!!id](#id), are not
+        highlighted, because the token starts with '[' resp. '(' instead of
+        the !! / # prefix.
+      - Metadata lines are styled via the ';' line-comment rule. Line comments
+        are restricted to the start of a line (forcePureLC), matching the
+        grammar; plain '"' strings end at the line break (((EOL)) closer) so
+        an unpaired quote cannot bleed across the rest of the file.
 -->
 <NotepadPlus>
     <UserLang name="nassi" ext="nassi" udlVersion="2.1">
         <Settings>
-            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="0" decimalSeparator="0" />
+            <Global caseIgnored="yes" allowFoldOfComments="no" foldCompact="no" forcePureLC="2" decimalSeparator="0" />
             <Prefix Keywords1="no" Keywords2="yes" Keywords3="yes" Keywords4="no" Keywords5="no" Keywords6="no" Keywords7="no" Keywords8="no" />
         </Settings>
         <KeywordLists>
@@ -34,7 +39,7 @@
             <Keywords name="Numbers, suffix1"></Keywords>
             <Keywords name="Numbers, suffix2"></Keywords>
             <Keywords name="Numbers, range"></Keywords>
-            <Keywords name="Operators1">{ } =</Keywords>
+            <Keywords name="Operators1"></Keywords>
             <Keywords name="Operators2"></Keywords>
             <Keywords name="Folders in code1, open">{</Keywords>
             <Keywords name="Folders in code1, middle"></Keywords>
@@ -53,7 +58,7 @@
             <Keywords name="Keywords6"></Keywords>
             <Keywords name="Keywords7"></Keywords>
             <Keywords name="Keywords8"></Keywords>
-            <Keywords name="Delimiters">00&quot;&quot;&quot; 01 02&quot;&quot;&quot; 03&quot; 04 05&quot; 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
+            <Keywords name="Delimiters">00&quot;&quot;&quot; 01 02&quot;&quot;&quot; 03&quot; 04 05&quot; ((EOL)) 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23</Keywords>
         </KeywordLists>
         <Styles>
             <WordsStyle name="DEFAULT" styleID="0" fgColor="000000" bgColor="FFFFFF" fontName="" fontStyle="0" nesting="0" />

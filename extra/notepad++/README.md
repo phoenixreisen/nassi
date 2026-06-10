@@ -1,6 +1,6 @@
 # nassi — Notepad++ support
 
-A **User Defined Language** (UDL) for syntax highlighting (no plugin, no compilation) in Notepadd++.
+A **User Defined Language** (UDL) for syntax highlighting (no plugin, no compilation) in Notepad++.
 
 ## 1. Syntax highlighting — `nassi.udl.xml`
 
