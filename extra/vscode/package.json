@@ -3,7 +3,8 @@
   "displayName": "nassi",
   "description": "Syntax highlighting and formatting for nassi (.nassi) specification files.",
   "version": "0.1.0",
-  "publisher": "Phoenix Reisen GmbH",
+  "publisher": "phoenixreisen",
+  "author": "Phoenix Reisen GmbH",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",

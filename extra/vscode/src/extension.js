@@ -85,10 +85,11 @@ function formatNassi(text, indentUnit) {
       continue;
     }
 
-    // Preserve metadata lines verbatim (sans trailing whitespace).
+    // Preserve metadata lines verbatim (sans trailing whitespace). Their
+    // values are arbitrary single-line text, so braces and `"""` in them are
+    // never structural — don't scan them.
     if (trimmed.startsWith(';')) {
       out.push(raw.replace(/[ \t]+$/, ''));
-      ({ depth, inPara } = scanLine(trimmed, depth, inPara));
       continue;
     }
 
