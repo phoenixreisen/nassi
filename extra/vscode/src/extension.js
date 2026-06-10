@@ -1,6 +1,9 @@
 'use strict';
 
 const vscode = require('vscode');
+const path = require('path');
+const fs = require('fs');
+const { lintNassi } = require('./lint');
 
 /**
  * Scans a single line, starting from the given brace `depth` and paragraph
@@ -105,6 +108,59 @@ function formatNassi(text, indentUnit) {
   return out.join(eol) + (endsWithNewline ? eol : '');
 }
 
+/**
+ * Builds an INCLUDE resolver for lintNassi that reads files relative to
+ * `dir`. `visited` holds the absolute paths on the current include chain, so
+ * cyclic includes are skipped instead of recursing forever.
+ *
+ * @param {string} dir
+ * @param {Set<string>} visited
+ */
+function makeIncludeResolver(dir, visited) {
+  return (filename) => {
+    const file = path.resolve(dir, filename);
+    if (visited.has(file)) {
+      return { text: '' }; // cyclic include: nothing further to analyze
+    }
+    let text;
+    try {
+      text = fs.readFileSync(file, 'utf8');
+    } catch (e) {
+      return null;
+    }
+    const chain = new Set(visited);
+    chain.add(file);
+    return { text, resolveInclude: makeIncludeResolver(path.dirname(file), chain) };
+  };
+}
+
+const SEVERITIES = {
+  error: vscode.DiagnosticSeverity.Error,
+  warning: vscode.DiagnosticSeverity.Warning,
+  info: vscode.DiagnosticSeverity.Information
+};
+
+function refreshDiagnostics(document, collection) {
+  if (document.languageId !== 'nassi') {
+    return;
+  }
+  const opts = {};
+  if (document.uri.scheme === 'file') {
+    opts.resolveInclude = makeIncludeResolver(
+      path.dirname(document.uri.fsPath),
+      new Set([document.uri.fsPath])
+    );
+  }
+  const diagnostics = lintNassi(document.getText(), opts).map((d) => {
+    const range = new vscode.Range(d.line, d.startCol, d.line, d.endCol);
+    const diagnostic = new vscode.Diagnostic(range, d.message, SEVERITIES[d.severity]);
+    diagnostic.source = 'nassi';
+    diagnostic.code = d.code;
+    return diagnostic;
+  });
+  collection.set(document.uri, diagnostics);
+}
+
 function activate(context) {
   const selector = { language: 'nassi' };
 
@@ -125,6 +181,36 @@ function activate(context) {
   context.subscriptions.push(
     vscode.languages.registerDocumentFormattingEditProvider(selector, provider)
   );
+
+  const diagnostics = vscode.languages.createDiagnosticCollection('nassi');
+  const lintTimers = new Map();
+
+  const scheduleLint = (document) => {
+    if (document.languageId !== 'nassi') {
+      return;
+    }
+    const key = document.uri.toString();
+    clearTimeout(lintTimers.get(key));
+    lintTimers.set(key, setTimeout(() => {
+      lintTimers.delete(key);
+      refreshDiagnostics(document, diagnostics);
+    }, 300));
+  };
+
+  context.subscriptions.push(
+    diagnostics,
+    { dispose() { lintTimers.forEach(clearTimeout); lintTimers.clear(); } },
+    vscode.workspace.onDidOpenTextDocument((d) => refreshDiagnostics(d, diagnostics)),
+    vscode.workspace.onDidChangeTextDocument((e) => scheduleLint(e.document)),
+    vscode.workspace.onDidCloseTextDocument((d) => {
+      const key = d.uri.toString();
+      clearTimeout(lintTimers.get(key));
+      lintTimers.delete(key);
+      diagnostics.delete(d.uri);
+    })
+  );
+
+  vscode.workspace.textDocuments.forEach((d) => refreshDiagnostics(d, diagnostics));
 }
 
 function deactivate() {}

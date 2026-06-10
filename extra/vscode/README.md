@@ -1,7 +1,7 @@
 # nassi — VS Code extension
 
-Syntax highlighting and formatting for [nassi](https://github.com/phoenixreisen/nassi)
-specification files (`.nassi`).
+Syntax highlighting, formatting and linting for
+[nassi](https://github.com/phoenixreisen/nassi) specification files (`.nassi`).
 
 ## Features
 
@@ -17,6 +17,24 @@ specification files (`.nassi`).
   interiors are left untouched, since their content is literal Markdown where
   whitespace can be significant. Metadata lines are kept verbatim so column
   alignment is preserved.
+- **Linting** (diagnostics in the editor and the *Problems* panel, updated as
+  you type):
+  - *Errors* — structural problems that make the file unparseable for the
+    nassi CLI: unbalanced `{` / `}`, a `{` that does not follow a block
+    keyword, empty blocks, unterminated `"""` paragraphs, `CATCH` without
+    `HANDLE`, `SWITCH` without `CASE`/`DEFAULT`, `ELSE` without a matching
+    `IF`, and `HANDLE`/`CASE`/`DEFAULT` outside their container.
+  - *Warnings* — the same exception checks the nassi CLI performs: `THROW`n
+    error-codes that no `HANDLE` covers, and handled error-codes that are
+    never thrown. `INCLUDE`d files are taken into account (and a warning is
+    shown if an included file cannot be found).
+  - *Hints* — an ALL-CAPS keyword line that silently degrades to plain text
+    (e.g. `SUB foo` without a `{ ... }` block, or `THROW` without an
+    error-code), and metadata-style lines (`; key = value`) that appear below
+    the top of the file.
+
+The linter (`src/lint.js`) has no dependencies; its tests run with `npm test`
+(Node ≥ 18).
 
 ## Try it out
 
@@ -27,7 +45,7 @@ Development Host, then open one of the files in `../../examples`.
 
 ```sh
 cd extra/vscode/dist
-code --install-extension nassi-0.1.0.vsix
+code --install-extension nassi-0.2.0.vsix
 ```
 
 ## Create extension locally
