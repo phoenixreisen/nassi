@@ -1,6 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## 0.9.0 - 2026-06-26 
+- FIX: Issue #8 Very wide images should not dominate the width of the entire layout.
+
 ## 0.8.2 - 2026-05-04 
 - FIX: Issue #9 Step numbering corrupt after CATCH inside BLOCK
 
