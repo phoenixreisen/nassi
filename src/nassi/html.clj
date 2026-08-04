@@ -188,15 +188,6 @@
        :ERRORCODEREF xf-errorcoderef} 
       (steps/add-steps ast))))
 
-;; TODO should better be defined as a CSS class in "diagram.css"
-(def ^:private table-style 
-  {:style 
-   (str 
-     "border: 2px solid black;"
-     "border-collapse: collapse;"
-     "padding: 0.2rem 0.8rem;"
-     "text-align: left;")})
-
 (defn- metadata-table 
   "Render the metadata map `meta` as a horizontal table, according to the
   options."
@@ -208,9 +199,9 @@
               meta)]
       (h/html
         [:p
-         [:table table-style
-          [:tr (for [[k _] m] [:th table-style k])]
-          [:tr (for [[_ v] m] [:td table-style v])]]]))))
+         [:table.metadata
+          [:tr (for [[k _] m] [:th k])]
+          [:tr (for [[_ v] m] [:td v])]]]))))
 
 (defn to-html 
   "Generates a HTML representation of the `ast` with options:
@@ -232,3 +223,20 @@
           (str meta-tbl (to-html-body ast))
           (str (to-html-body ast) meta-tbl))
         (html-with-inline-css))))
+
+#_(spit "table.html"
+        (html-with-inline-css (to-html-body (xf-text {:id "x"
+                                                :strep "y"}
+                                               "| First Header  | Second Header |
+                                               | ------------- | ------------- |
+                                               | Content Cell  | Content Cell  |
+                                               | Content Cell  | Content Cell  |"))))
+
+#_(spit "metadata-table.html"
+        (html-with-inline-css (metadata-table {"erstellt_von" "JAHE"
+                                               "erstellt_am" "2. Mai 2025"
+                                               "zuletzt_geaendert_von" "JAHE"
+                                               "zuletzt_geaendert_am" "16. Mai 2025"
+                                               "Status" "DEPRECATED"
+                                               "stattdessen" "U009"}
+                                              {:show-metadata true})))

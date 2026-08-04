@@ -1,5 +1,13 @@
 :root {
   --border-thickness: 2px;
+
+  /* Table colors */
+
+  --tablebordorcolor: black;
+  --tablerowbackgroundcolor-default: white;
+  --tablerowbackgroundcolor-muted: whitesmoke;
+
+  --metadatatablebackgroundcolor: var(--tablerowbackgroundcolor-default);
 }
 
 html {
@@ -22,8 +30,40 @@ img {
   display: block;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+tr {
+  background-color: var(--tablerowbackgroundcolor-default);
+}
+
+tr:nth-child(2n) {
+  background-color: var(--tablerowbackgroundcolor-muted);
+}
+
+td, th {
+  border: 1px solid var(--tablebordorcolor);
+  padding: 0.5rem;
+}
+
 .diagram {
   width: fit-content;
+}
+
+table.metadata {
+  border: 2px solid black;
+  border-collapse: collapse;
+  padding: 0.2rem 0.8rem;
+  text-align: left;
+}
+
+table.metadata tr {
+  background-color: var(--metadatatablebackgroundcolor);
+}
+
+table.metadata td, th {
+  border: 2px solid black;
 }
 
 .expression {
