@@ -16,3 +16,4 @@ pom.xml.asc
 .hg/
 .idea/
 /resources/test/*.html
+.clj-kondo
